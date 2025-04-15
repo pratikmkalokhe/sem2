@@ -1,0 +1,3071 @@
+//slip 1
+//Q1 Write a program to sort a list of n numbers in ascending order using selection sort and determine the time required to sort the elements.
+
+import java.util.Arrays;
+
+public class SelectionSort_1 {
+
+    public static void main(String[] args) {
+        int[] arr = {74, 25, 42, 25, 61};
+
+        System.out.println("Original Array: " + Arrays.toString(arr));
+
+        long startTime = System.nanoTime();
+        selectionSort(arr);
+        long endTime = System.nanoTime();
+
+        System.out.println("Sorted Array: " + Arrays.toString(arr));
+        System.out.println("Time taken by Selection Sort: " + (endTime - startTime) + " ns");
+    }
+
+    public static void selectionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            int temp = arr[minIndex];
+            arr[minIndex] = arr[i];
+            arr[i] = temp;
+        }
+    }
+}
+
+
+//Q.2) Write a program to sort a given set of elements using the Quick sort method and determine the time required to sort the elements. Repeat the experiment for different values of n, the number of elements in the list to be sorted. The elements can be read from a file or can begenerated using the random number generator.
+
+import java.util.Random;
+
+public class Ass1_2 { //QuickSortExample
+
+    public static void main(String[] args) {
+        // Experiment with different values of n
+        int[] nValues = {100, 500, 1000, 5000, 10000};
+
+        for (int n : nValues) {
+            int[] arr = generateRandomArray(n);
+            
+            // Measure the time required for sorting
+            long startTime = System.nanoTime();
+            quickSort(arr, 0, arr.length - 1);
+            long endTime = System.nanoTime();
+            
+            long elapsedTime = endTime - startTime;
+            
+            System.out.println("For n=" + n + ", Time taken: " + elapsedTime + " nanoseconds");
+        }
+    }
+
+    // Quick Sort Algorithm
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int partitionIndex = partition(arr, low, high);
+            quickSort(arr, low, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, high);
+        }
+    }
+
+    public static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        
+        swap(arr, i + 1, high);
+        return i + 1;
+    }
+
+    public static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+     // Generate an array of random integers
+     public static int[] generateRandomArray(int n) {
+        int[] arr = new int[n];
+        Random random = new Random();
+        
+        for (int i = 0; i < n; i++) {
+            arr[i] = random.nextInt(1000); // Adjust the upper limit as needed
+        }
+         return arr;
+    }
+}
+
+
+
+
+//slip 2
+//Q.1) Write a program to sort n randomly generated elements using Heapsort method.
+
+import java.util.Arrays;
+
+public class HeapSort_1 {
+
+    public static void main(String[] args) {
+        int[] arr = {64, 25, 12, 22, 11};
+
+        System.out.println("Original Array: " + Arrays.toString(arr));
+
+        long startTime = System.currentTimeMillis();
+        heapSort(arr);
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Heap Sort: " + Arrays.toString(arr));
+        System.out.println("Time Complexity: " + (endTime - startTime) + " milliseconds");
+    }
+
+    public static void heapSort(int[] arr) {
+        int n = arr.length;
+
+        // Build max heap
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            heapify(arr, n, i);
+        }
+
+        // Extract elements from the heap one by one
+        for (int i = n - 1; i >= 0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+
+            // Call max heapify on the reduced heap
+            heapify(arr, i, 0);
+        }
+    }
+
+    private static void heapify(int[] arr, int n, int i) {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if (left < n && arr[left] > arr[largest]) {
+            largest = left;
+        }
+
+        if (right < n && arr[right] > arr[largest]) {
+            largest = right;
+        }
+
+        if (largest != i) {
+            int swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            heapify(arr, n, largest);
+        }
+    }
+}
+
+
+//Q.2) Write a program to implement Strassen’s Matrix multiplication.
+
+import java.util.Scanner;
+
+public class StrassenMatrixMultiplication_4 {
+    public static int[][] strassenMultiply(int[][] A, int[][] B) {
+        int n = A.length;
+
+        // Base case: if the matrices are 1x1
+        if (n == 1) {
+            int[][] C = new int[1][1];
+            C[0][0] = A[0][0] * B[0][0];
+            return C;
+        }
+
+        // Divide matrices into submatrices
+        int[][] A11 = new int[n / 2][n / 2];
+        int[][] A12 = new int[n / 2][n / 2];
+        int[][] A21 = new int[n / 2][n / 2];
+        int[][] A22 = new int[n / 2][n / 2];
+
+        int[][] B11 = new int[n / 2][n / 2];
+        int[][] B12 = new int[n / 2][n / 2];
+        int[][] B21 = new int[n / 2][n / 2];
+        int[][] B22 = new int[n / 2][n / 2];
+
+        // Split matrices into submatrices
+        splitMatrix(A, A11, 0, 0);
+        splitMatrix(A, A12, 0, n / 2);
+        splitMatrix(A, A21, n / 2, 0);
+        splitMatrix(A, A22, n / 2, n / 2);
+
+        splitMatrix(B, B11, 0, 0);
+        splitMatrix(B, B12, 0, n / 2);
+        splitMatrix(B, B21, n / 2, 0);
+        splitMatrix(B, B22, n / 2, n / 2);
+
+        // Calculate Strassen's submatrices
+        int[][] S1 = subtractMatrices(B12, B22);
+        int[][] S2 = addMatrices(A11, A12);
+        int[][] S3 = addMatrices(A21, A22);
+        int[][] S4 = subtractMatrices(B21, B11);
+        int[][] S5 = addMatrices(A11, A22);
+        int[][] S6 = addMatrices(B11, B22);
+        int[][] S7 = subtractMatrices(A12, A22);
+        int[][] S8 = addMatrices(B21, B22);
+        int[][] S9 = subtractMatrices(A11, A21);
+        int[][] S10 = addMatrices(B11, B12);
+
+        // Calculate products
+        int[][] P1 = strassenMultiply(A11, S1);
+        int[][] P2 = strassenMultiply(S2, B22);
+        int[][] P3 = strassenMultiply(S3, B11);
+        int[][] P4 = strassenMultiply(A22, S4);
+        int[][] P5 = strassenMultiply(S5, S6);
+        int[][] P6 = strassenMultiply(S7, S8);
+        int[][] P7 = strassenMultiply(S9, S10);
+
+        // Calculate result submatrices
+        int[][] C11 = addMatrices(subtractMatrices(addMatrices(P5, P4), P2), P6);
+        int[][] C12 = addMatrices(P1, P2);
+        int[][] C21 = addMatrices(P3, P4);
+        int[][] C22 = subtractMatrices(subtractMatrices(addMatrices(P5, P1), P3), P7);
+
+        // Combine result submatrices into one matrix
+        int[][] C = new int[n][n];
+        joinMatrices(C11, C, 0, 0);
+        joinMatrices(C12, C, 0, n / 2);
+        joinMatrices(C21, C, n / 2, 0);
+        joinMatrices(C22, C, n / 2, n / 2);
+
+        return C;
+    }
+
+    public static void splitMatrix(int[][] matrix, int[][] submatrix, int startRow, int startCol) {
+        for (int i = 0; i < submatrix.length; i++) {
+            for (int j = 0; j < submatrix.length; j++) {
+                submatrix[i][j] = matrix[i + startRow][j + startCol];
+            }
+        }
+    }
+
+    public static void joinMatrices(int[][] submatrix, int[][] matrix, int startRow, int startCol) {
+        for (int i = 0; i < submatrix.length; i++) {
+            for (int j = 0; j < submatrix.length; j++) {
+                matrix[i + startRow][j + startCol] = submatrix[i][j];
+            }
+        }
+    }
+
+    public static int[][] addMatrices(int[][] A, int[][] B) {
+        int n = A.length;
+        int[][] C = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                C[i][j] = A[i][j] + B[i][j];
+            }
+        }
+        return C;
+    }
+
+    public static int[][] subtractMatrices(int[][] A, int[][] B) {
+        int n = A.length;
+        int[][] C = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                C[i][j] = A[i][j] - B[i][j];
+            }
+        }
+        return C;
+    }
+
+    public static void printMatrix(int[][] matrix) {
+        for (int[] row : matrix) {
+            for (int num : row) {
+                System.out.print(num + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the dimension of the square matrix: ");
+        int n = scanner.nextInt();
+        int[][] A = new int[n][n];
+        int[][] B = new int[n][n];
+
+        System.out.println("Enter elements of matrix A:");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                A[i][j] = scanner.nextInt();
+            }
+        }
+
+        System.out.println("Enter elements of matrix B:");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                B[i][j] = scanner.nextInt();
+            }
+        }
+
+        System.out.println("Matrix A:");
+        printMatrix(A);
+        System.out.println("Matrix B:");
+        printMatrix(B);
+
+        int[][] C = strassenMultiply(A, B);
+
+        System.out.println("Resultant Matrix (A * B):");
+        printMatrix(C);
+
+        scanner.close();
+    }
+}
+
+// Enter the dimension of the square matrix: 2
+// Enter elements of matrix A:
+// 1 2
+// 3 4
+// Enter elements of matrix B:
+// 5 6
+// 7 8
+
+
+
+
+//slip 3
+//Q.1) Write a program to sort a given set of elements using the Quick sort method and determine the time required to sort the elements.
+
+import java.util.Random;
+
+public class Ass1_2 { //QuickSortExample
+
+    public static void main(String[] args) {
+        // Experiment with different values of n
+        int[] nValues = {100, 500, 1000, 5000, 10000};
+
+        for (int n : nValues) {
+            int[] arr = generateRandomArray(n);
+            
+            // Measure the time required for sorting
+            long startTime = System.nanoTime();
+            quickSort(arr, 0, arr.length - 1);
+            long endTime = System.nanoTime();
+            
+            long elapsedTime = endTime - startTime;
+            
+            System.out.println("For n=" + n + ", Time taken: " + elapsedTime + " nanoseconds");
+        }
+    }
+
+    // Quick Sort Algorithm
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int partitionIndex = partition(arr, low, high);
+            quickSort(arr, low, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, high);
+        }
+    }
+
+    public static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        
+        swap(arr, i + 1, high);
+        return i + 1;
+    }
+
+    public static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+     // Generate an array of random integers
+     public static int[] generateRandomArray(int n) {
+        int[] arr = new int[n];
+        Random random = new Random();
+        
+        for (int i = 0; i < n; i++) {
+            arr[i] = random.nextInt(1000); // Adjust the upper limit as needed
+        }
+         return arr;
+    }
+}
+
+
+// Q.2) Write a program to find Minimum Cost Spanning Tree of a given undirected graph using Prims algorithm.
+
+import java.util.*;
+
+public class PrimsMST_6 {
+    static class Edge {
+        int source;
+        int destination;
+        int weight;
+
+        public Edge(int source, int destination, int weight) {
+            this.source = source;
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+
+    public static List<Edge> primMST(List<Edge>[] graph, int vertices) {
+        boolean[] visited = new boolean[vertices];
+        PriorityQueue<Edge> minHeap = new PriorityQueue<>(Comparator.comparingInt(e -> e.weight));
+        List<Edge> result = new ArrayList<>();
+
+        // Start Prim's algorithm from vertex 0
+        visited[0] = true;
+        for (Edge edge : graph[0]) {
+            minHeap.add(edge);
+        }
+
+        while (!minHeap.isEmpty()) {
+            Edge edge = minHeap.poll();
+            if (visited[edge.destination]) {
+                continue;
+            }
+            visited[edge.destination] = true;
+            result.add(edge);
+            for (Edge adjacent : graph[edge.destination]) {
+                if (!visited[adjacent.destination]) {
+                    minHeap.add(adjacent);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        System.out.print("Enter the number of edges: ");
+        int edgesCount = scanner.nextInt();
+
+        List<Edge>[] graph = new List[vertices];
+        for (int i = 0; i < vertices; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        System.out.println("Enter the edges with their weights (source destination weight):");
+        for (int i = 0; i < edgesCount; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            int weight = scanner.nextInt();
+            graph[source].add(new Edge(source, destination, weight));
+            graph[destination].add(new Edge(destination, source, weight));
+        }
+
+        List<Edge> mst = primMST(graph, vertices);
+
+        System.out.println("Edges of Minimum Cost Spanning Tree:");
+        for (Edge edge : mst) {
+            System.out.println(edge.source + " - " + edge.destination + " : " + edge.weight);
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 4
+// Enter the number of edges: 5
+// Enter the edges with their weights (source destination weight):
+// 0 1 10
+// 0 2 6
+// 0 3 5
+// 1 3 15
+// 2 3 4
+
+
+
+
+//slip 4
+//Q.1) Write a program to implement a Merge Sort algorithm to sort a given set of elements and determine the time required to sort the elements.
+
+import java.util.Random;
+
+public class Ass1_3 { //MergeSortExample 
+
+    public static void main(String[] args) {
+        // Experiment with different values of n
+        int[] nValues = {100, 500, 1000, 5000, 10000};
+        
+        for (int n : nValues) {
+            int[] arr = generateRandomArray(n);
+            
+            // Measure the time required for sorting
+            long startTime = System.nanoTime();
+            mergeSort(arr);
+            long endTime = System.nanoTime();
+            
+            long elapsedTime = endTime - startTime;
+            
+            System.out.println("For n=" + n + ", Time taken: " + elapsedTime + " nanoseconds");
+        }
+    }
+     // Merge Sort Algorithm
+     public static void mergeSort(int[] arr) {
+        if (arr.length > 1) {
+            int mid = arr.length / 2;
+            
+            int[] left = new int[mid];
+            System.arraycopy(arr, 0, left, 0, mid);
+            
+            int[] right = new int[arr.length - mid];
+            System.arraycopy(arr, mid, right, 0, arr.length - mid);
+            
+            mergeSort(left);
+            mergeSort(right);
+            
+            merge(arr, left, right);
+        }
+    }
+
+    public static void merge(int[] arr, int[] left, int[] right) {
+        int i = 0, j = 0, k = 0;
+        
+        while (i < left.length && j < right.length) {
+            if (left[i] < right[j]) {
+                arr[k++] = left[i++];
+            } else {
+                arr[k++] = right[j++];
+            }
+        }
+        
+        while (i < left.length) {
+            arr[k++] = left[i++];
+        }
+        
+        while (j < right.length) {
+            arr[k++] = right[j++];
+        }
+    }
+
+    // Generate an array of random integers
+    public static int[] generateRandomArray(int n) {
+        int[] arr = new int[n];
+        Random random = new Random();
+        
+        for (int i = 0; i < n; i++) {
+            arr[i] = random.nextInt(1000); // Adjust the upper limit as needed
+        }
+        return arr;
+    }
+}
+
+
+// Q.2) Write a program to implement Knapsack problems using Greedy method.
+
+import java.util.*;
+
+public class KnapsackGreedy_8 {
+    static class Item {
+        int weight;
+        int value;
+
+        public Item(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
+        }
+    }
+
+    public static double knapsackGreedy(int capacity, List<Item> items) {
+        Collections.sort(items, (a, b) -> Double.compare((double) b.value / b.weight, (double) a.value / a.weight));
+
+        double totalValue = 0;
+        int remainingCapacity = capacity;
+
+        for (Item item : items) {
+            if (item.weight <= remainingCapacity) {
+                totalValue += item.value;
+                remainingCapacity -= item.weight;
+            } else {
+                totalValue += (double) item.value / item.weight * remainingCapacity;
+                break;
+            }
+        }
+
+        return totalValue;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of items: ");
+        int numItems = scanner.nextInt();
+
+        List<Item> items = new ArrayList<>();
+        System.out.println("Enter weights and values of items:");
+        for (int i = 0; i < numItems; i++) {
+            int weight = scanner.nextInt();
+            int value = scanner.nextInt();
+            items.add(new Item(weight, value));
+        }
+
+        System.out.print("Enter the capacity of the knapsack: ");
+        int capacity = scanner.nextInt();
+
+        double maxValue = knapsackGreedy(capacity, items);
+        System.out.println("Maximum value that can be achieved: " + maxValue);
+
+        scanner.close();
+    }
+}
+
+// Enter the capacity of the knapsack: 10
+// Enter the number of items: 3
+// Enter the weight and value of each item:
+// Item 1: 2 6
+// Item 2: 5 8
+// Item 3: 3 7
+
+
+
+
+//slip 5
+//Q.1) Write a program for the Implementation of Kruskal’s algorithm to find minimum cost spanning tree.
+ 
+import java.util.*;
+
+class Edge implements Comparable<Edge> {
+    int source;
+    int destination;
+    int weight;
+
+    public Edge(int source, int destination, int weight) {
+        this.source = source;
+        this.destination = destination;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compareTo(Edge other) {
+        return this.weight - other.weight;
+    }
+}
+
+public class KruskalsMST {
+    private int vertices;
+    private List<Edge> edges;
+
+    public KruskalsMST(int vertices) {
+        this.vertices = vertices;
+        this.edges = new ArrayList<>();
+    }
+
+    public void addEdge(int source, int destination, int weight) {
+        Edge edge = new Edge(source, destination, weight);
+        edges.add(edge);
+    }
+
+    public void kruskalsMST() {
+        Collections.sort(edges);
+
+        int[] parent = new int[vertices];
+        for (int i = 0; i < vertices; i++) {
+            parent[i] = i;
+        }
+
+        List<Edge> mst = new ArrayList<>();
+
+        int edgeCount = 0;
+        int index = 0;
+        while (edgeCount < vertices - 1 && index < edges.size()) {
+            Edge edge = edges.get(index);
+            index++;
+
+            int sourceParent = findParent(parent, edge.source);
+            int destinationParent = findParent(parent, edge.destination);
+
+            if (sourceParent != destinationParent) {
+                mst.add(edge);
+                edgeCount++;
+                parent[sourceParent] = destinationParent;
+            }
+        }
+
+        System.out.println("Edges of Minimum Cost Spanning Tree:");
+        for (Edge edge : mst) {
+            System.out.println(edge.source + " - " + edge.destination + " : " + edge.weight);
+        }
+    }
+
+    private int findParent(int[] parent, int vertex) {
+        if (parent[vertex] != vertex) {
+            parent[vertex] = findParent(parent, parent[vertex]);
+        }
+        return parent[vertex];
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        System.out.print("Enter the number of edges: ");
+        int edgesCount = scanner.nextInt();
+
+        KruskalsMST graph = new KruskalsMST(vertices);
+
+        System.out.println("Enter the edges with their weights (source destination weight):");
+        for (int i = 0; i < edgesCount; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            int weight = scanner.nextInt();
+            graph.addEdge(source, destination, weight);
+        }
+
+        graph.kruskalsMST();
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 4
+// Enter the number of edges: 5
+// Enter the edges with their weights (source destination weight):
+// 0 1 10
+// 0 2 6
+// 0 3 5
+// 1 3 15
+// 2 3 4
+
+
+//Q.2) Write a program to implement Huffman Code using greedy methods and also calculate the best case and worst-case complexity. 
+
+import java.util.*;
+
+class HuffmanNode implements Comparable<HuffmanNode> {
+    char data;
+    int frequency;
+    HuffmanNode left, right;
+
+    public HuffmanNode(char data, int frequency) {
+        this.data = data;
+        this.frequency = frequency;
+    }
+
+    @Override
+    public int compareTo(HuffmanNode o) {
+        return this.frequency - o.frequency;
+    }
+}
+
+public class HuffmanCoding_10 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the string to encode: ");
+        String inputString = scanner.nextLine();
+
+        Map<Character, Integer> frequencyMap = new HashMap<>();
+        for (char c : inputString.toCharArray()) {
+            frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+        }
+
+        PriorityQueue<HuffmanNode> priorityQueue = new PriorityQueue<>();
+        for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
+            priorityQueue.add(new HuffmanNode(entry.getKey(), entry.getValue()));
+        }
+
+        while (priorityQueue.size() > 1) {
+            HuffmanNode left = priorityQueue.poll();
+            HuffmanNode right = priorityQueue.poll();
+
+            HuffmanNode mergedNode = new HuffmanNode('$', left.frequency + right.frequency);
+            mergedNode.left = left;
+            mergedNode.right = right;
+            priorityQueue.add(mergedNode);
+        }
+
+        HuffmanNode root = priorityQueue.peek();
+        Map<Character, String> huffmanCodes = new HashMap<>();
+        generateCodes(root, "", huffmanCodes);
+
+        System.out.println("Huffman Codes:");
+        for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+
+        scanner.close();
+    }
+
+    private static void generateCodes(HuffmanNode root, String code, Map<Character, String> huffmanCodes) {
+        if (root == null)
+            return;
+
+        if (root.data != '$') {
+            huffmanCodes.put(root.data, code);
+        }
+
+        generateCodes(root.left, code + "0", huffmanCodes);
+        generateCodes(root.right, code + "1", huffmanCodes);
+    }
+}
+
+// Enter the string to encode:
+// hello world
+
+
+
+
+//slip 6
+//Q-1) Write a program for the Implementation of Prim’s algorithm to find minimum cost spanning tree. 
+
+import java.util.*;
+
+public class PrimsMST_6 {
+    static class Edge {
+        int source;
+        int destination;
+        int weight;
+
+        public Edge(int source, int destination, int weight) {
+            this.source = source;
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+
+    public static List<Edge> primMST(List<Edge>[] graph, int vertices) {
+        boolean[] visited = new boolean[vertices];
+        PriorityQueue<Edge> minHeap = new PriorityQueue<>(Comparator.comparingInt(e -> e.weight));
+        List<Edge> result = new ArrayList<>();
+
+        // Start Prim's algorithm from vertex 0
+        visited[0] = true;
+        for (Edge edge : graph[0]) {
+            minHeap.add(edge);
+        }
+
+        while (!minHeap.isEmpty()) {
+            Edge edge = minHeap.poll();
+            if (visited[edge.destination]) {
+                continue;
+            }
+            visited[edge.destination] = true;
+            result.add(edge);
+            3
+            for (Edge adjacent : graph[edge.destination]) {
+                if (!visited[adjacent.destination]) {
+                    minHeap.add(adjacent);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        System.out.print("Enter the number of edges: ");
+        int edgesCount = scanner.nextInt();
+
+        List<Edge>[] graph = new List[vertices];
+        for (int i = 0; i < vertices; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        System.out.println("Enter the edges with their weights (source destination weight):");
+        for (int i = 0; i < edgesCount; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            int weight = scanner.nextInt();
+            graph[source].add(new Edge(source, destination, weight));
+            graph[destination].add(new Edge(destination, source, weight));
+        }
+
+        List<Edge> mst = primMST(graph, vertices);
+
+        System.out.println("Edges of Minimum Cost Spanning Tree:");
+        for (Edge edge : mst) {
+            System.out.println(edge.source + " - " + edge.destination + " : " + edge.weight);
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 4
+// Enter the number of edges: 5
+// Enter the edges with their weights (source destination weight):
+// 0 1 10
+// 0 2 6
+// 0 3 5
+// 1 3 15
+// 2 3 4
+
+
+
+//Q.2) Write a Program to find only length of Longest Common Subsequence.
+
+public class LongestCommonSubsequence22 {
+ 
+    /* Returns length of LCS for X[0..m-1], Y[0..n-1] */
+    int lcs(char[] X, char[] Y, int m, int n)
+    {
+        if (m == 0 || n == 0)
+            return 0;
+        if (X[m - 1] == Y[n - 1])
+            return 1 + lcs(X, Y, m - 1, n - 1);
+        else
+            return max(lcs(X, Y, m, n - 1), lcs(X, Y, m - 1, n));
+    }
+ 
+    /* Utility function to get max of 2 integers */
+    int max(int a, int b)
+    {
+        return (a > b) ? a : b;
+    }
+ 
+    public static void main(String[] args)
+    {
+        LongestCommonSubsequence22 lcs = new LongestCommonSubsequence22();
+        String s1 = "AGGTAB";
+        String s2 = "GXTXAYB";
+ 
+        char[] X = s1.toCharArray();
+        char[] Y = s2.toCharArray();
+        int m = X.length;
+        int n = Y.length;
+ 
+        System.out.println("Length of LCS is"
+                           + " " + lcs.lcs(X, Y, m, n));
+    }
+}
+
+/*OUTPUT:
+Length of LCS is 4
+*/
+
+
+
+
+//Slip 7
+//Q-1) Write a program for the Implementation of Dijkstra’s algorithm to find shortest path to other vertices.
+
+import java.util.*;
+
+public class DijkstrasShortestPath_7 {
+    static class Edge {
+        int destination;
+        int weight;
+
+        public Edge(int destination, int weight) {
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+
+    public static int[] dijkstra(List<Edge>[] graph, int source, int vertices) {
+        int[] distance = new int[vertices];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[source] = 0;
+
+        PriorityQueue<Edge> minHeap = new PriorityQueue<>(Comparator.comparingInt(e -> e.weight));
+        minHeap.add(new Edge(source, 0));
+
+        while (!minHeap.isEmpty()) {
+            Edge current = minHeap.poll();
+            int u = current.destination;
+
+            for (Edge neighbor : graph[u]) {
+                int v = neighbor.destination;
+                int w = neighbor.weight;
+
+                if (distance[u] != Integer.MAX_VALUE && distance[u] + w < distance[v]) {
+                    distance[v] = distance[u] + w;
+                    minHeap.add(new Edge(v, distance[v]));
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        List<Edge>[] graph = new List[vertices];
+        for (int i = 0; i < vertices; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        System.out.print("Enter the number of edges: ");
+        int edgesCount = scanner.nextInt();
+
+        System.out.print("Enter the source vertex: ");
+        int source = scanner.nextInt();
+
+        System.out.println("Enter the edges with their weights (destination weight):");
+        for (int i = 0; i < edgesCount; i++) {
+            int destination = scanner.nextInt();
+            int weight = scanner.nextInt();
+            graph[source].add(new Edge(destination, weight));
+        }
+
+        int[] shortestDistances = dijkstra(graph, source, vertices);
+
+        System.out.println("Shortest distances from source vertex " + source + ":");
+        for (int i = 0; i < vertices; i++) {
+            System.out.println("Vertex " + i + ": " + shortestDistances[i]);
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 4
+// Enter the number of edges: 5
+// Enter the source vertex: 0
+// Enter the edges with their weights (destination weight):
+// 0 1 10
+// 0 2 6
+// 0 3 5
+// 1 3 15
+// 2 3 4
+
+
+//Q.2) Write a program for finding Topological sorting for Directed Acyclic Graph (DAG).
+
+import java.util.*;
+
+public class TopologicalSort_14 {
+    private int vertices;
+    private LinkedList<Integer>[] adjList;
+
+    public TopologicalSort_14(int vertices) {
+        this.vertices = vertices;
+        adjList = new LinkedList[vertices];
+        for (int i = 0; i < vertices; ++i) {
+            adjList[i] = new LinkedList<>();
+        }
+    }
+
+    public void addEdge(int source, int destination) {
+        adjList[source].add(destination);
+    }
+
+    public void topologicalSortUtil(int vertex, boolean[] visited, Stack<Integer> stack) {
+        visited[vertex] = true;
+
+        Iterator<Integer> iterator = adjList[vertex].listIterator();
+        while (iterator.hasNext()) {
+            int nextVertex = iterator.next();
+            if (!visited[nextVertex]) {
+                topologicalSortUtil(nextVertex, visited, stack);
+            }
+        }
+
+        stack.push(vertex);
+    }
+
+    public void topologicalSort() {
+        Stack<Integer> stack = new Stack<>();
+        boolean[] visited = new boolean[vertices];
+
+        for (int i = 0; i < vertices; i++) {
+            if (!visited[i]) {
+                topologicalSortUtil(i, visited, stack);
+            }
+        }
+
+        System.out.println("Topological Sorting:");
+        while (!stack.empty()) {
+            System.out.print(stack.pop() + " ");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        TopologicalSort_14 graph = new TopologicalSort_14(vertices);
+
+        System.out.print("Enter the number of edges: ");
+        int edges = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination):");
+        for (int i = 0; i < edges; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            graph.addEdge(source, destination);
+        }
+
+        graph.topologicalSort();
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 6
+// Enter the number of edges: 6
+// Enter the edges (source destination):
+// 5 2
+// 5 0
+// 4 0
+// 4 1
+// 2 3
+// 3 1
+
+
+
+
+//slip 8
+//Q.1) Write a program to implement Fractional Knapsack problems using Greedy Method.
+
+import java.util.*;
+
+public class KnapsackGreedy_8 {
+    static class Item {
+        int weight;
+        int value;
+
+        public Item(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
+        }
+    }
+
+    public static double knapsackGreedy(int capacity, List<Item> items) {
+        Collections.sort(items, (a, b) -> Double.compare((double) b.value / b.weight, (double) a.value / a.weight));
+
+        double totalValue = 0;
+        int remainingCapacity = capacity;
+
+        for (Item item : items) {
+            if (item.weight <= remainingCapacity) {
+                totalValue += item.value;
+                remainingCapacity -= item.weight;
+            } else {
+                totalValue += (double) item.value / item.weight * remainingCapacity;
+                break;
+            }
+        }
+
+        return totalValue;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the capacity of the knapsack: ");
+        int capacity = scanner.nextInt();
+
+        System.out.print("Enter the number of items: ");
+        int numItems = scanner.nextInt();
+
+        List<Item> items = new ArrayList<>();
+        System.out.println("Enter weights and values of items:");
+        for (int i = 0; i < numItems; i++) {
+            int weight = scanner.nextInt();
+            int value = scanner.nextInt();
+            items.add(new Item(weight, value));
+        }
+
+        double maxValue = knapsackGreedy(capacity, items);
+        System.out.println("Maximum value that can be achieved: " + maxValue);
+
+        scanner.close();
+    }
+}
+
+// Enter the capacity of the knapsack: 10
+// Enter the number of items: 3
+// Enter the weight and value of each item:
+// Item 1: 2 6
+// Item 2: 5 8
+// Item 3: 3 7
+
+
+//Q.2) Write Program to implement Traveling Salesman Problem using nearest neighbor algorithm.
+
+import java.util.Scanner;
+
+public class TSPNearestNeighbor_16 {
+    public static void tsp(int[][] graph) {
+        int numNodes = graph.length;
+        int[] visited = new int[numNodes];
+        visited[0] = 1;
+        int current = 0;
+
+        System.out.print("Path: 0 -> ");
+
+        for (int i = 0; i < numNodes - 1; i++) {
+            int next = -1;
+            int minDist = Integer.MAX_VALUE;
+
+            for (int j = 0; j < numNodes; j++) {
+                if (graph[current][j] > 0 && visited[j] == 0 && graph[current][j] < minDist) {
+                    minDist = graph[current][j];
+                    next = j;
+                }
+            }
+
+            if (next != -1) {
+                visited[next] = 1;
+                current = next;
+                System.out.print(current + " -> ");
+            }
+        }
+
+        System.out.println("0");
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of nodes: ");
+        int numNodes = scanner.nextInt();
+        int[][] graph = new int[numNodes][numNodes];
+
+        System.out.println("Enter the adjacency matrix: ");
+        for (int i = 0; i < numNodes; i++) {
+            for (int j = 0; j < numNodes; j++) {
+                graph[i][j] = scanner.nextInt();
+            }
+        }
+
+        tsp(graph);
+        scanner.close();
+    }
+}
+
+// Enter the number of nodes: 4
+// Enter the adjacency matrix:
+// 0 10 15 20
+// 10 0 35 25
+// 15 35 0 30
+// 20 25 30 0
+
+
+
+
+//slip 9
+//Q.1) Write a program to implement optimal binary search tree and also calculate the best-case complexity.
+
+import java.util.Scanner;
+
+public class OptimalBST_9 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of keys: ");
+        int n = scanner.nextInt();
+        double[] probabilities = new double[n];
+        String[] keys = new String[n];
+
+        System.out.println("Enter the keys:");
+        for (int i = 0; i < n; i++) {
+            keys[i] = scanner.next();
+        }
+
+        System.out.println("Enter the probabilities of each key:");
+        for (int i = 0; i < n; i++) {
+            probabilities[i] = scanner.nextDouble();
+        }
+
+        double[][] cost = new double[n + 2][n + 1];
+        double[][] weight = new double[n + 2][n + 1];
+
+        for (int i = 1; i <= n + 1; i++) {
+            cost[i][i - 1] = 0;
+            weight[i][i - 1] = 0;
+        }
+
+        for (int l = 1; l <= n; l++) {
+            for (int i = 1; i <= n - l + 1; i++) {
+                int j = i + l - 1;
+                cost[i][j] = Double.MAX_VALUE;
+                weight[i][j] = weight[i][j - 1] + probabilities[j - 1];
+                for (int r = i; r <= j; r++) {
+                    double c = cost[i][r - 1] + cost[r + 1][j] + weight[i][j];
+                    if (c < cost[i][j]) {
+                        cost[i][j] = c;
+                    }
+                }
+            }
+        }
+
+        // Calculate best case and worst case
+        double bestCase = 0;
+        double worstCase = 0;
+        for (int i = 0; i < n; i++) {
+            bestCase += probabilities[i] * (i + 1);
+            worstCase += probabilities[i] * (n - i);
+        }
+
+        System.out.println("Optimal Binary Search Tree Cost: " + cost[1][n]);
+        System.out.println("Best Case Cost: " + bestCase);
+        System.out.println("Worst Case Cost: " + worstCase);
+
+        scanner.close();
+    }
+}
+
+/*Enter the number of keys: 4
+Enter the keys:
+1
+2
+3
+4
+Enter the probabilities of each key:
+10
+20
+30
+40
+Optimal Binary Search Tree Cost: 180.0
+Best Case Cost: 300.0
+Worst Case Cost: 200.0
+*/
+
+
+//Q.2) Write a program to implement Sum of Subset by Backtracking.
+
+import java.util.*;
+
+public class SubsetSum_18 {
+    static boolean[] include;
+    static int[] weights;
+    static int targetSum;
+
+    public static void findSubsets(int i, int currentSum, int remainingSum) {
+        if (currentSum == targetSum) {
+            System.out.print("Subset with sum " + targetSum + " found: {");
+            for (int j = 0; j < include.length; j++) {
+                if (include[j]) {
+                    System.out.print(weights[j] + " ");
+                }
+            }
+            System.out.println("}");
+            return;
+        } else if (i >= weights.length || currentSum + remainingSum < targetSum) {
+            return;
+        } else {
+            include[i] = true;
+            findSubsets(i + 1, currentSum + weights[i], remainingSum - weights[i]);
+            include[i] = false;
+            findSubsets(i + 1, currentSum, remainingSum - weights[i]);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of elements: ");
+        int n = scanner.nextInt();
+        weights = new int[n];
+        include = new boolean[n];
+
+        System.out.println("Enter the elements:");
+        for (int i = 0; i < n; i++) {
+            weights[i] = scanner.nextInt();
+        }
+
+        System.out.print("Enter the target sum: ");
+        targetSum = scanner.nextInt();
+
+        int totalSum = Arrays.stream(weights).sum();
+
+        if (totalSum < targetSum) {
+            System.out.println("No subset possible");
+        } else {
+            int remainingSum = totalSum;
+            findSubsets(0, 0, remainingSum);
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of elements: 5
+// Enter the elements:
+// 2
+// 4
+// 6
+// 8
+// 10
+// Enter the target sum: 14
+
+
+
+
+//slip 10
+//Q.1) Write a program to implement Huffman Code using greedy methods.
+
+import java.util.*;
+
+class HuffmanNode implements Comparable<HuffmanNode> {
+    char data;
+    int frequency;
+    HuffmanNode left, right;
+
+    public HuffmanNode(char data, int frequency) {
+        this.data = data;
+        this.frequency = frequency;
+    }
+
+    @Override
+    public int compareTo(HuffmanNode o) {
+        return this.frequency - o.frequency;
+    }
+}
+
+public class HuffmanCoding_10 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the string to encode: ");
+        String inputString = scanner.nextLine();
+
+        Map<Character, Integer> frequencyMap = new HashMap<>();
+        for (char c : inputString.toCharArray()) {
+            frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+        }
+
+        PriorityQueue<HuffmanNode> priorityQueue = new PriorityQueue<>();
+        for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
+            priorityQueue.add(new HuffmanNode(entry.getKey(), entry.getValue()));
+        }
+
+        while (priorityQueue.size() > 1) {
+            HuffmanNode left = priorityQueue.poll();
+            HuffmanNode right = priorityQueue.poll();
+
+            HuffmanNode mergedNode = new HuffmanNode('$', left.frequency + right.frequency);
+            mergedNode.left = left;
+            mergedNode.right = right;
+            priorityQueue.add(mergedNode);
+        }
+
+        HuffmanNode root = priorityQueue.peek();
+        Map<Character, String> huffmanCodes = new HashMap<>();
+        generateCodes(root, "", huffmanCodes);
+
+        System.out.println("Huffman Codes:");
+        for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+
+        scanner.close();
+    }
+
+    private static void generateCodes(HuffmanNode root, String code, Map<Character, String> huffmanCodes) {
+        if (root == null)
+            return;
+
+        if (root.data != '$') {
+            huffmanCodes.put(root.data, code);
+        }
+
+        generateCodes(root.left, code + "0", huffmanCodes);
+        generateCodes(root.right, code + "1", huffmanCodes);
+    }
+}
+
+// Enter the string to encode:
+// hello world
+
+
+//Q-2) Write a program to solve 4 Queens Problem using Backtracking.
+
+import java.util.Scanner;
+
+public class FourQueen_20 {
+    static int[] board;
+
+    public static boolean isSafe(int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i] == col || Math.abs(i - row) == Math.abs(board[i] - col)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printBoard() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (board[i] == j) {
+                    System.out.print("Q ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public static void solveFourQueens(int row) {
+        if (row == 4) {
+            printBoard();
+            return;
+        }
+
+        for (int col = 0; col < 4; col++) {
+            if (isSafe(row, col)) {
+                board[row] = col;
+                solveFourQueens(row + 1);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Solving 4 Queens Problem using Backtracking");
+        board = new int[4];
+
+        solveFourQueens(0);
+
+        scanner.close();
+    }
+}
+
+
+
+
+//slip11
+//Q.1) Write a programs to implement DFS (Depth First Search) and determine the time complexity for the same.
+
+import java.util.*;
+
+public class DepthFirstSearch_13 {
+    private int V;
+    private LinkedList<Integer> adj[];
+
+    @SuppressWarnings("unchecked")
+    public DepthFirstSearch_13(int v) {
+        V = v;
+        adj = new LinkedList[V];
+        for (int i = 0; i < V; ++i)
+            adj[i] = new LinkedList<>();
+    }
+    
+
+    void addEdge(int v, int w) {
+        adj[v].add(w);
+    }
+
+    void DFSUtil(int v, boolean visited[]) {
+        visited[v] = true;
+        System.out.print(v + " ");
+
+        Iterator<Integer> i = adj[v].listIterator();
+        while (i.hasNext()) {
+            int n = i.next();
+            if (!visited[n])
+                DFSUtil(n, visited);
+        }
+    }
+
+    void DFS(int v) {
+        boolean visited[] = new boolean[V];
+        DFSUtil(v, visited);
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of vertices: ");
+        int V = scanner.nextInt();
+        DepthFirstSearch_13 g = new DepthFirstSearch_13(V);
+
+        System.out.print("Enter the number of edges: ");
+        int E = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination): ");
+        for (int i = 0; i < E; i++) {
+            int src = scanner.nextInt();
+            int dest = scanner.nextInt();
+            g.addEdge(src, dest);
+        }
+
+        System.out.print("Enter the starting vertex for DFS: ");
+        int start = scanner.nextInt();
+
+        System.out.println("Depth First Traversal starting from vertex " + start + ":");
+        g.DFS(start);
+
+        scanner.close();
+    }
+}
+
+/*Enter the number of vertices: 3
+Enter the number of edges: 2
+Enter the edges (source destination):
+0 1
+1 2
+Enter the starting vertex for DFS: 0
+Depth First Traversal starting from vertex 0:
+0 1 2
+*/
+
+
+//Q.2) Write a program to find shortest paths from a given vertex in a weighted connected graph, to other vertices using Dijkstra’s algorithm. 
+
+import java.util.*;
+
+public class DijkstrasShortestPath_7 {
+    static class Edge {
+        int destination;
+        int weight;
+
+        public Edge(int destination, int weight) {
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+
+    public static int[] dijkstra(List<Edge>[] graph, int source, int vertices) {
+        int[] distance = new int[vertices];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[source] = 0;
+
+        PriorityQueue<Edge> minHeap = new PriorityQueue<>(Comparator.comparingInt(e -> e.weight));
+        minHeap.add(new Edge(source, 0));
+
+        while (!minHeap.isEmpty()) {
+            Edge current = minHeap.poll();
+            int u = current.destination;
+
+            for (Edge neighbor : graph[u]) {
+                int v = neighbor.destination;
+                int w = neighbor.weight;
+
+                if (distance[u] != Integer.MAX_VALUE && distance[u] + w < distance[v]) {
+                    distance[v] = distance[u] + w;
+                    minHeap.add(new Edge(v, distance[v]));
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        List<Edge>[] graph = new List[vertices];
+        for (int i = 0; i < vertices; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        System.out.print("Enter the number of edges: ");
+        int edgesCount = scanner.nextInt();
+
+        System.out.print("Enter the source vertex: ");
+        int source = scanner.nextInt();
+
+        System.out.println("Enter the edges with their weights (destination weight):");
+        for (int i = 0; i < edgesCount; i++) {
+            int destination = scanner.nextInt();
+            int weight = scanner.nextInt();
+            graph[source].add(new Edge(destination, weight));
+        }
+
+        int[] shortestDistances = dijkstra(graph, source, vertices);
+
+        System.out.println("Shortest distances from source vertex " + source + ":");
+        for (int i = 0; i < vertices; i++) {
+            System.out.println("Vertex " + i + ": " + shortestDistances[i]);
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 4
+// Enter the number of edges: 5
+// Enter the source vertex: 0
+// Enter the edges with their weights (destination weight):
+// 0 1 10
+// 0 2 6
+// 0 3 5
+// 1 3 15
+// 2 3 4
+
+
+
+
+//slip12
+//Q.1) Write a program to implement BFS (Breadth First Search) and determine the time complexity for the same.
+
+import java.util.*;
+
+public class BreadthFirstSearch_13 {
+    private int V;
+    private LinkedList<Integer> adj[];
+
+    @SuppressWarnings("unchecked")
+    public BreadthFirstSearch_13(int v) {
+        V = v;
+        adj = new LinkedList[V];
+        for (int i = 0; i < V; ++i)
+            adj[i] = new LinkedList<>();
+    }
+
+    void addEdge(int v, int w) {
+        adj[v].add(w);
+    }
+
+    void BFS(int s) {
+        boolean visited[] = new boolean[V];
+
+        LinkedList<Integer> queue = new LinkedList<>();
+
+        visited[s] = true;
+        queue.add(s);
+
+        while (queue.size() != 0) {
+            s = queue.poll();
+            System.out.print(s + " ");
+
+            Iterator<Integer> i = adj[s].listIterator();
+            while (i.hasNext()) {
+                int n = i.next();
+                if (!visited[n]) {
+                    visited[n] = true;
+                    queue.add(n);
+                }
+            }
+        }
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of vertices: ");
+        int V = scanner.nextInt();
+        BreadthFirstSearch_13 g = new BreadthFirstSearch_13(V);
+
+        System.out.print("Enter the number of edges: ");
+        int E = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination): ");
+        for (int i = 0; i < E; i++) {
+            int src = scanner.nextInt();
+            int dest = scanner.nextInt();
+            g.addEdge(src, dest);
+        }
+
+        System.out.print("Enter the starting vertex for BFS: ");
+        int start = scanner.nextInt();
+
+        System.out.println("Breadth First Traversal starting from vertex " + start + ":");
+        g.BFS(start);
+
+        scanner.close();
+    }
+}
+
+//Enter the number of vertices: 6
+//Enter the number of edges: 8
+//Enter the edges (source destination):
+//0 1
+//0 2
+//1 3
+//1 4
+//2 4
+//3 4
+//3 5
+//4 5
+//Enter the starting vertex for BFS: 0
+
+
+//Q.2) Write a program to sort a given set of elements using the Selection sort method and determine the time required to sort the elements.
+
+import java.util.Arrays;
+
+public class SelectionSort_1 {
+
+    public static void main(String[] args) {
+        int[] arr = {64, 25, 12, 22, 11};
+
+        System.out.println("Original Array: " + Arrays.toString(arr));
+
+        long startTime = System.nanoTime();
+        selectionSort(arr);
+        long endTime = System.nanoTime();
+
+        System.out.println("Sorted Array: " + Arrays.toString(arr));
+        System.out.println("Time taken by Selection Sort: " + (endTime - startTime) + " ns");
+    }
+
+    public static void selectionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            int temp = arr[minIndex];
+            arr[minIndex] = arr[i];
+            arr[i] = temp;
+        }
+    }
+}
+
+
+
+
+// Slip 13 
+// Q.1) Write a program to find minimum number of multiplications in Matrix Chain Multiplication. 
+
+import java.util.Scanner;
+
+public class MatrixChainMultiplication_11 {
+    public static int minMultiplications(int[] dimensions) {
+        int n = dimensions.length - 1;
+        int[][] dp = new int[n][n];
+
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i < n - len + 1; i++) {
+                int j = i + len - 1;
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = i; k < j; k++) {
+                    int cost = dp[i][k] + dp[k + 1][j] + dimensions[i] * dimensions[k + 1] * dimensions[j + 1];
+                    dp[i][j] = Math.min(dp[i][j], cost);
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of matrices: ");
+        int n = scanner.nextInt();
+
+        int[] dimensions = new int[n + 1];
+        System.out.println("Enter the dimensions of the matrices:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter the number of rows for matrix " + (i + 1) + ": ");
+            int rows = scanner.nextInt();
+            System.out.print("Enter the number of columns for matrix " + (i + 1) + ": ");
+            int cols = scanner.nextInt();
+            dimensions[i] = rows;
+            if (i == n - 1) {
+                dimensions[i + 1] = cols;
+            }
+        }
+
+        int minOps = minMultiplications(dimensions);
+        System.out.println("Minimum number of multiplications: " + minOps);
+
+        scanner.close();
+    }
+}
+
+/*Enter the number of matrices: 4
+Enter the dimensions of the matrices:
+Enter the number of rows for matrix 1: 10
+Enter the number of columns for matrix 1: 20
+Enter the number of rows for matrix 2: 20
+Enter the number of columns for matrix 2: 30
+Enter the number of rows for matrix 3: 30
+Enter the number of columns for matrix 3: 40
+Enter the number of rows for matrix 4: 40
+Enter the number of columns for matrix 4: 50
+Minimum number of multiplications: 38000
+*/
+
+
+// Q.2) Write a program to implement an optimal binary search tree and also calculate the best case and worst-case complexity. 
+
+import java.util.Scanner;
+
+public class OptimalBST_9 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of keys: ");
+        int n = scanner.nextInt();
+        double[] probabilities = new double[n];
+        String[] keys = new String[n];
+
+        System.out.println("Enter the keys:");
+        for (int i = 0; i < n; i++) {
+            keys[i] = scanner.next();
+        }
+
+        System.out.println("Enter the probabilities of each key:");
+        for (int i = 0; i < n; i++) {
+            probabilities[i] = scanner.nextDouble();
+        }
+
+        double[][] cost = new double[n][n];
+        double[][] weight = new double[n][n];
+
+        for (int i = 0; i < n; i++) {
+            cost[i][i] = probabilities[i];
+            weight[i][i] = probabilities[i];
+        }
+
+        for (int l = 2; l <= n; l++) {
+            for (int i = 0; i <= n - l; i++) {
+                int j = i + l - 1;
+                cost[i][j] = Double.MAX_VALUE;
+                weight[i][j] = weight[i][j - 1] + probabilities[j];
+                for (int r = i; r <= j; r++) {
+                    double c = (r > i ? cost[i][r - 1] : 0) + (r < j ? cost[r + 1][j] : 0) + weight[i][j];
+                    if (c < cost[i][j]) {
+                        cost[i][j] = c;
+                    }
+                }
+            }
+        }
+
+        System.out.println("Optimal Binary Search Tree Cost: " + cost[0][n - 1]);
+
+        scanner.close();
+    }
+}
+
+// Enter the number of keys: 4
+// Enter the keys and their frequencies:
+// Key 1: 10
+// Key 2: 20
+// Key 3: 30
+// Key 4: 40
+
+
+
+
+//slip 14
+//Q.1) Write a program to sort a list of n numbers in ascending order using Insertion sort and determine the time required to sort the elements.
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class InsertionSortTime {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of elements: ");
+        int n = scanner.nextInt();
+
+        int[] arr = new int[n];
+        System.out.println("Enter the elements:");
+
+        for (int i = 0; i < n; i++) {
+            arr[i] = scanner.nextInt();
+        }
+
+        long startTime = System.nanoTime();
+        insertionSort(arr);
+        long endTime = System.nanoTime();
+
+        System.out.println("Sorted Array: " + Arrays.toString(arr));
+        System.out.println("Time taken by Insertion Sort: " + (endTime - startTime) + " ns");
+
+        scanner.close();
+    }
+
+    public static void insertionSort(int[] arr) {
+        for (int i = 1; i < arr.length; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
+        }
+    }
+}
+
+
+//Q.2) Write a program to implement DFS and BFS. Compare the time complexity.
+
+import java.util.*;
+
+public class GraphTraversalComparison {
+
+    static class Graph {
+        int V;
+        LinkedList<Integer>[] adjList;
+
+        Graph(int V) {
+            this.V = V;
+            adjList = new LinkedList[V];
+            for (int i = 0; i < V; ++i) {
+                adjList[i] = new LinkedList();
+            }
+        }
+
+        void addEdge(int v, int w) {
+            adjList[v].add(w);
+        }
+
+        // Depth First Search
+        void DFSUtil(int v, boolean[] visited) {
+            visited[v] = true;
+            System.out.print(v + " ");
+
+            Iterator<Integer> iterator = adjList[v].listIterator();
+            while (iterator.hasNext()) {
+                int n = iterator.next();
+                if (!visited[n]) {
+                    DFSUtil(n, visited);
+                }
+            }
+        }
+
+        void DFS(int v) {
+            boolean[] visited = new boolean[V];
+            DFSUtil(v, visited);
+        }
+
+        // Breadth First Search
+        void BFS(int s) {
+            boolean[] visited = new boolean[V];
+            LinkedList<Integer> queue = new LinkedList<>();
+
+            visited[s] = true;
+            queue.add(s);
+
+            while (queue.size() != 0) {
+                s = queue.poll();
+                System.out.print(s + " ");
+
+                Iterator<Integer> iterator = adjList[s].listIterator();
+                while (iterator.hasNext()) {
+                    int n = iterator.next();
+                    if (!visited[n]) {
+                        visited[n] = true;
+                        queue.add(n);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Graph g = new Graph(4);
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(2, 3);
+        g.addEdge(3, 3);
+
+        System.out.println("Depth First Traversal:");
+        long startTimeDFS = System.nanoTime();
+        g.DFS(2); // Starting from vertex 2
+        long endTimeDFS = System.nanoTime();
+        System.out.println("\nTime taken by DFS: " + (endTimeDFS - startTimeDFS) + " ns");
+
+        System.out.println("\nBreadth First Traversal:");
+        long startTimeBFS = System.nanoTime();
+        g.BFS(2); // Starting from vertex 2
+        long endTimeBFS = System.nanoTime();
+        System.out.println("\nTime taken by BFS: " + (endTimeBFS - startTimeBFS) + " ns");
+    }
+}
+
+
+
+
+//slip 15
+//Q.1) Write a program to implement to find out solution for 0/1 knapsack problem using LCBB (Least Cost Branch and Bound).
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
+class Item {
+    int weight;
+    int value;
+
+    public Item(int weight, int value) {
+        this.weight = weight;
+        this.value = value;
+    }
+}
+
+class Node {
+    int level;
+    int weight;
+    int value;
+    double bound;
+
+    public Node(int level, int weight, int value) {
+        this.level = level;
+        this.weight = weight;
+        this.value = value;
+        this.bound = 0.0;
+    }
+}
+
+public class KnapsackLCBB {
+    static Comparator<Item> comparator = Comparator.comparingDouble((Item a) -> (double) a.value / a.weight).reversed();
+
+    public static double bound(Node u, int n, int W, Item[] arr) {
+        if (u.weight >= W) {
+            return 0;
+        }
+
+        double profitBound = u.value;
+        int j = u.level + 1;
+        int totalWeight = u.weight;
+
+        while (j < n && totalWeight + arr[j].weight <= W) {
+            totalWeight += arr[j].weight;
+            profitBound += arr[j].value;
+            j++;
+        }
+
+        if (j < n) {
+            profitBound += (W - totalWeight) * ((double) arr[j].value / arr[j].weight);
+        }
+
+        return profitBound;
+    }
+
+    public static int knapsack(int W, Item[] arr, int n) {
+        Arrays.sort(arr, comparator);
+
+        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingDouble((Node a) -> a.bound).reversed());
+
+        Node u = new Node(-1, 0, 0);
+        Node v;
+        int maxProfit = 0;
+
+        u.bound = bound(u, n, W, arr);
+        queue.add(u);
+
+        while (!queue.isEmpty()) {
+            u = queue.poll();
+
+            if (u.bound > maxProfit) {
+                v = new Node(0, 0, 0);
+
+                if (u.level == -1) {
+                    v.level = 0;
+                } else if (u.level != n - 1) {
+                    v.level = u.level + 1;
+                }
+
+                v.weight = u.weight + arr[v.level].weight;
+                v.value = u.value + arr[v.level].value;
+
+                if (v.weight <= W && v.value > maxProfit) {
+                    maxProfit = v.value;
+                }
+
+                v.bound = bound(v, n, W, arr);
+
+                if (v.bound > maxProfit) {
+                    queue.add(v);
+                }
+
+                v = new Node(0, 0, 0);
+                v.level = u.level + 1;
+                v.weight = u.weight;
+                v.value = u.value;
+                v.bound = bound(v, n, W, arr);
+
+                if (v.bound > maxProfit) {
+                    queue.add(v);
+                }
+            }
+        }
+
+        return maxProfit;
+    }
+
+    public static void main(String[] args) {
+        int W = 50;
+        Item[] arr = {new Item(10, 60), new Item(20, 100), new Item(30, 120)};
+        int n = arr.length;
+        int maxProfit = knapsack(W, arr, n);
+        System.out.println("Maximum profit: " + maxProfit);
+    }
+}
+
+
+//Q.2) Write a program to implement Graph Coloring Algorithm.
+
+import java.util.Scanner;
+
+public class GraphColoring_17 {
+    private int V;
+    private int[] colors;
+    private boolean[][] graph;
+
+    public GraphColoring_17(int v) {
+        V = v;
+        colors = new int[V];
+        graph = new boolean[V][V];
+    }
+
+    public void addEdge(int u, int v) {
+        graph[u][v] = true;
+        graph[v][u] = true;
+    }
+
+    public boolean isSafe(int v, int c) {
+        for (int i = 0; i < V; i++) {
+            if (graph[v][i] && c == colors[i])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean graphColoringUtil(int v, int m) {
+        if (v == V)
+            return true;
+
+        for (int c = 1; c <= m; c++) {
+            if (isSafe(v, c)) {
+                colors[v] = c;
+
+                if (graphColoringUtil(v + 1, m))
+                    return true;
+
+                colors[v] = 0;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean graphColoring(int m) {
+        if (!graphColoringUtil(0, m)) {
+            System.out.println("Solution does not exist");
+            return false;
+        }
+
+        printSolution();
+        return true;
+    }
+
+    public void printSolution() {
+        System.out.println("Solution Exists: Following are the assigned colors");
+        for (int i = 0; i < V; i++)
+            System.out.println("Vertex " + i + " ---> Color " + colors[i]);
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int V = scanner.nextInt();
+        GraphColoring_17 g = new GraphColoring_17(V);
+
+        System.out.println("Enter the adjacency matrix (1 if edge exists, 0 otherwise):");
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                g.graph[i][j] = scanner.nextInt() == 1;
+            }
+        }
+
+        System.out.print("Enter the number of colors: ");
+        int m = scanner.nextInt();
+
+        g.graphColoring(m);
+
+        scanner.close();
+    }
+}
+
+/*Enter the number of vertices: 4
+Enter the adjacency matrix (1 if edge exists, 0 otherwise):
+0 1 1 1
+1 0 1 1
+1 1 0 1
+1 1 1 0
+Enter the number of colors: 4
+*/
+
+
+
+
+//slip 16
+//Q.1) Write a program to implement to find out solution for 0/1 knapsack problem using dynamic programming. 
+
+import java.util.*;
+
+public class KnapsackProblem_25 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of items: ");
+        int numItems = scanner.nextInt();
+
+        int[] weights = new int[numItems];
+        int[] values = new int[numItems];
+
+        System.out.println("Enter the weight and value of each item:");
+        for (int i = 0; i < numItems; i++) {
+            weights[i] = scanner.nextInt();
+            values[i] = scanner.nextInt();
+        }
+
+        System.out.print("Enter the capacity of the knapsack: ");
+        int capacity = scanner.nextInt();
+
+        int maxValue = knapsack(weights, values, capacity);
+        System.out.println("Maximum value that can be obtained: " + maxValue);
+
+        scanner.close();
+    }
+
+    public static int knapsack(int[] weights, int[] values, int capacity) {
+        int numItems = weights.length;
+        int[][] dp = new int[numItems + 1][capacity + 1];
+
+        for (int i = 1; i <= numItems; i++) {
+            for (int j = 1; j <= capacity; j++) {
+                if (weights[i - 1] <= j) {
+                    dp[i][j] = Math.max(dp[i - 1][j], values[i - 1] + dp[i - 1][j - weights[i - 1]]);
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+
+        return dp[numItems][capacity];
+    }
+}
+
+// Enter the number of items: 3
+// Enter the weight and value of each item:
+// 5 10
+// 3 7
+// 4 8
+// Enter the capacity of the knapsack: 7
+
+
+//Q.2) Write a program to determine if a given graph is a Hamiltonian cycle or not.
+
+import java.util.*;
+
+public class HamiltonianCycle_15 {
+    private int vertices;
+    private LinkedList<Integer>[] adjList;
+
+    public HamiltonianCycle_15(int vertices) {
+        this.vertices = vertices;
+        adjList = new LinkedList[vertices];
+        for (int i = 0; i < vertices; ++i) {
+            adjList[i] = new LinkedList<>();
+        }
+    }
+
+    public void addEdge(int source, int destination) {
+        adjList[source].add(destination);
+        adjList[destination].add(source);
+    }
+
+    public boolean isHamiltonianCycle() {
+        boolean[] visited = new boolean[vertices];
+        Arrays.fill(visited, false);
+
+        // Check if every vertex is reachable from the first vertex
+        if (dfs(0, visited, 1)) {
+            // Check if all vertices are visited
+            for (boolean v : visited) {
+                if (!v) {
+                    return false;
+                }
+            }
+            // Check if the last vertex has an edge to the first vertex
+            return adjList[0].contains(vertices - 1);
+        }
+        return false;
+    }
+
+    private boolean dfs(int vertex, boolean[] visited, int count) {
+        visited[vertex] = true;
+
+        if (count == vertices) {
+            return true;
+        }
+
+        for (int nextVertex : adjList[vertex]) {
+            if (!visited[nextVertex] && dfs(nextVertex, visited, count + 1)) {
+                return true;
+            }
+        }
+
+        visited[vertex] = false;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        HamiltonianCycle_15 graph = new HamiltonianCycle_15(vertices);
+
+        System.out.print("Enter the number of edges: ");
+        int edges = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination):");
+        for (int i = 0; i < edges; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            graph.addEdge(source, destination);
+        }
+
+        if (graph.isHamiltonianCycle()) {
+            System.out.println("The given graph is a Hamiltonian cycle.");
+        } else {
+            System.out.println("The given graph is not a Hamiltonian cycle.");
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 5
+// Enter the number of edges: 7
+// Enter the edges (source destination):
+// 0 1
+// 1 2
+// 2 3
+// 3 4
+// 4 0
+// 0 2
+// 1 3
+
+
+
+
+//slip 17
+//Q.1) Write a program to implement solve ‘N’ Queens Problem using Backtracking.
+
+import java.util.Scanner;
+
+public class NQueens {
+    static int[] board;
+    static int N;
+
+    public static boolean isSafe(int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i] == col || Math.abs(i - row) == Math.abs(board[i] - col)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printBoard() {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (board[i] == j) {
+                    System.out.print("Q ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public static void solveNQueens(int row) {
+        if (row == N) {
+            printBoard();
+            return;
+        }
+
+        for (int col = 0; col < N; col++) {
+            if (isSafe(row, col)) {
+                board[row] = col;
+                solveNQueens(row + 1);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of queens (N): ");
+        N = scanner.nextInt();
+        board = new int[N];
+
+        solveNQueens(0);
+
+        scanner.close();
+    }
+}
+
+// Enter the number of queens (N): 4
+
+
+//Q.2) Write a program to find out solution for 0/1 knapsack problem. 
+
+import java.util.*;
+
+public class KnapsackProblem_25 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of items: ");
+        int numItems = scanner.nextInt();
+
+        int[] weights = new int[numItems];
+        int[] values = new int[numItems];
+
+        System.out.println("Enter the weight and value of each item:");
+        for (int i = 0; i < numItems; i++) {
+            weights[i] = scanner.nextInt();
+            values[i] = scanner.nextInt();
+        }
+
+        System.out.print("Enter the capacity of the knapsack: ");
+        int capacity = scanner.nextInt();
+
+        int maxValue = knapsack(weights, values, capacity);
+        System.out.println("Maximum value that can be obtained: " + maxValue);
+
+        scanner.close();
+    }
+
+    public static int knapsack(int[] weights, int[] values, int capacity) {
+        int numItems = weights.length;
+        int[][] dp = new int[numItems + 1][capacity + 1];
+
+        for (int i = 1; i <= numItems; i++) {
+            for (int j = 1; j <= capacity; j++) {
+                if (weights[i - 1] <= j) {
+                    dp[i][j] = Math.max(dp[i - 1][j], values[i - 1] + dp[i - 1][j - weights[i - 1]]);
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+
+        return dp[numItems][capacity];
+    }
+}
+
+// Enter the number of items: 3
+// Enter the weight and value of each item:
+// 5 10
+// 3 7
+// 4 8
+// Enter the capacity of the knapsack: 7
+
+
+
+
+//slip 18
+//Q.1) Write a program to implement Graph Coloring Algorithm. 
+
+import java.util.Scanner;
+
+public class GraphColoring_17 {
+    private int V;
+    private int[] colors;
+    private boolean[][] graph;
+
+    public GraphColoring_17(int v) {
+        V = v;
+        colors = new int[V];
+        graph = new boolean[V][V];
+    }
+
+    public void addEdge(int u, int v) {
+        graph[u][v] = true;
+        graph[v][u] = true;
+    }
+
+    public boolean isSafe(int v, int c) {
+        for (int i = 0; i < V; i++) {
+            if (graph[v][i] && c == colors[i])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean graphColoringUtil(int v, int m) {
+        if (v == V)
+            return true;
+
+        for (int c = 1; c <= m; c++) {
+            if (isSafe(v, c)) {
+                colors[v] = c;
+
+                if (graphColoringUtil(v + 1, m))
+                    return true;
+
+                colors[v] = 0;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean graphColoring(int m) {
+        if (!graphColoringUtil(0, m)) {
+            System.out.println("Solution does not exist");
+            return false;
+        }
+
+        printSolution();
+        return true;
+    }
+
+    public void printSolution() {
+        System.out.println("Solution Exists: Following are the assigned colors");
+        for (int i = 0; i < V; i++)
+            System.out.println("Vertex " + i + " ---> Color " + colors[i]);
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int V = scanner.nextInt();
+        GraphColoring_17 g = new GraphColoring_17(V);
+
+        System.out.println("Enter the adjacency matrix (1 if edge exists, 0 otherwise):");
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                g.graph[i][j] = scanner.nextInt() == 1;
+            }
+        }
+
+        System.out.print("Enter the number of colors: ");
+        int m = scanner.nextInt();
+
+        g.graphColoring(m);
+
+        scanner.close();
+    }
+}
+
+
+/*Enter the number of vertices: 4
+Enter the adjacency matrix (1 if edge exists, 0 otherwise):
+0 1 1 1
+1 0 1 1
+1 1 0 1
+1 1 1 0
+Enter the number of colors: 4
+*/
+
+
+//Q.2) Write a program to find out live node, E node and dead node from a given graph.
+
+import java.util.*;
+
+public class NodeClassification {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        List<List<Integer>> adjList = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            adjList.add(new ArrayList<>());
+        }
+
+        System.out.print("Enter the number of edges: ");
+        int edges = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination):");
+        for (int i = 0; i < edges; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            adjList.get(source).add(destination);
+        }
+
+        System.out.print("Enter the source node: ");
+        int source = scanner.nextInt();
+
+        Set<Integer> liveNodes = new HashSet<>();
+        Set<Integer> eNodes = new HashSet<>();
+        Set<Integer> deadNodes = new HashSet<>();
+
+        dfs(adjList, source, liveNodes, eNodes, deadNodes);
+        markDeadNodes(adjList, source, liveNodes, deadNodes);
+
+        System.out.println("Live Nodes: " + liveNodes);
+        System.out.println("E Nodes: " + eNodes);
+        System.out.println("Dead Nodes: " + deadNodes);
+
+        scanner.close();
+    }
+
+    public static void dfs(List<List<Integer>> adjList, int vertex, Set<Integer> liveNodes, Set<Integer> eNodes, Set<Integer> deadNodes) {
+        liveNodes.add(vertex);
+        for (int neighbor : adjList.get(vertex)) {
+            if (!liveNodes.contains(neighbor)) {
+                dfs(adjList, neighbor, liveNodes, eNodes, deadNodes);
+            } else if (!eNodes.contains(neighbor)) {
+                eNodes.add(neighbor);
+            }
+        }
+    }
+
+    public static void markDeadNodes(List<List<Integer>> adjList, int source, Set<Integer> liveNodes, Set<Integer> deadNodes) {
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] visited = new boolean[adjList.size()];
+        visited[source] = true;
+        queue.add(source);
+    
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            for (int neighbor : adjList.get(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.add(neighbor);
+                }
+            }
+        }
+    
+        for (int i = 0; i < adjList.size(); i++) {
+            if (!visited[i]) {
+                deadNodes.add(i);
+            }
+        }
+    }
+    
+}
+
+
+// Enter the number of vertices: 5
+// Enter the number of edges: 7
+// Enter the edges (source destination):
+// 0 1
+// 0 2
+// 1 3
+// 2 3
+// 3 4
+// 4 2
+// 1 2
+// Enter the source node: 0
+
+
+
+
+//slip 19
+//Q.1) Write a program to determine if a given graph is a Hamiltonian cycle or Not.
+
+import java.util.*;
+
+public class HamiltonianCycle_15 {
+    private int vertices;
+    private LinkedList<Integer>[] adjList;
+
+    public HamiltonianCycle_15(int vertices) {
+        this.vertices = vertices;
+        adjList = new LinkedList[vertices];
+        for (int i = 0; i < vertices; ++i) {
+            adjList[i] = new LinkedList<>();
+        }
+    }
+
+    public void addEdge(int source, int destination) {
+        adjList[source].add(destination);
+        adjList[destination].add(source);
+    }
+
+    public boolean isHamiltonianCycle() {
+        boolean[] visited = new boolean[vertices];
+        Arrays.fill(visited, false);
+
+        // Check if every vertex is reachable from the first vertex
+        if (dfs(0, visited, 1)) {
+            // Check if all vertices are visited
+            for (boolean v : visited) {
+                if (!v) {
+                    return false;
+                }
+            }
+            // Check if the last vertex has an edge to the first vertex
+            return adjList[0].contains(vertices - 1);
+        }
+        return false;
+    }
+
+    private boolean dfs(int vertex, boolean[] visited, int count) {
+        visited[vertex] = true;
+
+        if (count == vertices) {
+            return true;
+        }
+
+        for (int nextVertex : adjList[vertex]) {
+            if (!visited[nextVertex] && dfs(nextVertex, visited, count + 1)) {
+                return true;
+            }
+        }
+
+        visited[vertex] = false;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        HamiltonianCycle_15 graph = new HamiltonianCycle_15(vertices);
+
+        System.out.print("Enter the number of edges: ");
+        int edges = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination):");
+        for (int i = 0; i < edges; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            graph.addEdge(source, destination);
+        }
+
+        if (graph.isHamiltonianCycle()) {
+            System.out.println("The given graph is a Hamiltonian cycle.");
+        } else {
+            System.out.println("The given graph is not a Hamiltonian cycle.");
+        }
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 5
+// Enter the number of edges: 7
+// Enter the edges (source destination):
+// 0 1
+// 1 2
+// 2 3
+// 3 4
+// 4 0
+// 0 2
+// 1 3
+
+
+//Q.2) Write a program to show board configuration of 4 queens’ problem.
+
+public class NQueens {
+    public static void main(String[] args) {
+        int n = 4;
+        int[] board = new int[n];
+        solveNQueens(n, board, 0);
+    }
+
+    public static void solveNQueens(int n, int[] board, int row) {
+        if (row == n) {
+            printBoard(board);
+            return;
+        }
+
+        for (int col = 0; col < n; col++) {
+            if (isSafe(board, row, col)) {
+                board[row] = col;
+                solveNQueens(n, board, row + 1);
+                // Backtrack if the solution is not feasible
+                board[row] = -1;
+            }
+        }
+    }
+
+    public static boolean isSafe(int[] board, int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i] == col || Math.abs(row - i) == Math.abs(col - board[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printBoard(int[] board) {
+        int n = board.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i] == j) {
+                    System.out.print("Q ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+}
+
+//Enter the number of queens (N): 4
+
+
+
+
+//slip 20
+//Q.1) Write a program to implement for finding Topological sorting and determine the time complexity for the same. 
+
+import java.util.*;
+
+public class TopologicalSorting {
+    private int vertices;
+    private LinkedList<Integer>[] adjList;
+
+    public TopologicalSorting(int vertices) {
+        this.vertices = vertices;
+        adjList = new LinkedList[vertices];
+        for (int i = 0; i < vertices; ++i) {
+            adjList[i] = new LinkedList<>();
+        }
+    }
+
+    public void addEdge(int source, int destination) {
+        adjList[source].add(destination);
+    }
+
+    public void topologicalSortUtil(int vertex, boolean[] visited, Stack<Integer> stack) {
+        visited[vertex] = true;
+
+        Iterator<Integer> iterator = adjList[vertex].listIterator();
+        while (iterator.hasNext()) {
+            int nextVertex = iterator.next();
+            if (!visited[nextVertex]) {
+                topologicalSortUtil(nextVertex, visited, stack);
+            }
+        }
+
+        stack.push(vertex);
+    }
+
+    public void topologicalSort() {
+        Stack<Integer> stack = new Stack<>();
+        boolean[] visited = new boolean[vertices];
+
+        for (int i = 0; i < vertices; i++) {
+            if (!visited[i]) {
+                topologicalSortUtil(i, visited, stack);
+            }
+        }
+
+        System.out.println("Topological Sorting:");
+        while (!stack.empty()) {
+            System.out.print(stack.pop() + " ");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of vertices: ");
+        int vertices = scanner.nextInt();
+
+        TopologicalSorting graph = new TopologicalSorting(vertices);
+
+        System.out.print("Enter the number of edges: ");
+        int edges = scanner.nextInt();
+
+        System.out.println("Enter the edges (source destination):");
+        for (int i = 0; i < edges; i++) {
+            int source = scanner.nextInt();
+            int destination = scanner.nextInt();
+            graph.addEdge(source, destination);
+        }
+
+        long startTime = System.nanoTime(); // Start measuring time
+
+        graph.topologicalSort(); // Perform topological sorting
+
+        long endTime = System.nanoTime(); // End measuring time
+        long duration = (endTime - startTime) / 1000000; // Convert nanoseconds to milliseconds
+
+        System.out.println("\nTime taken for topological sorting: " + duration + " milliseconds");
+
+        scanner.close();
+    }
+}
+
+// Enter the number of vertices: 6
+// Enter the number of edges: 6
+// Enter the edges (source destination):
+// 5 2
+// 5 0
+// 4 0
+// 4 1
+// 2 3
+// 3 1
+
+
+//Q.2) Write a program to solve N Queens Problem using Backtracking.
+public class NQueens {
+    public static void main(String[] args) {
+        int n = 4;
+        int[] board = new int[n];
+        solveNQueens(n, board, 0);
+    }
+
+    public static void solveNQueens(int n, int[] board, int row) {
+        if (row == n) {
+            printBoard(board);
+            return;
+        }
+
+        for (int col = 0; col < n; col++) {
+            if (isSafe(board, row, col)) {
+                board[row] = col;
+                solveNQueens(n, board, row + 1);
+                // Backtrack if the solution is not feasible
+                board[row] = -1;
+            }
+        }
+    }
+
+    public static boolean isSafe(int[] board, int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i] == col || Math.abs(row - i) == Math.abs(col - board[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printBoard(int[] board) {
+        int n = board.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i] == j) {
+                    System.out.print("Q ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+}
+
+//Enter the number of queens (N): 4
