@@ -1,0 +1,319 @@
+Q1] Create an Android Application that will change color of the screen and change the font size of text view using xml.
+
+
+MainActivity.java :
+
+package com.example.slip18q1;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView textView;
+    private int fontSize = 24;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+        // Set the initial color of the screen
+    }
+
+    public void increaseFontSize(View view) {
+        fontSize += 4;
+        textView.setTextSize(fontSize);
+        getWindow().getDecorView().setBackgroundColor(Color.BLUE);
+    }
+
+    public void decreaseFontSize(View view) {
+        fontSize -= 4;
+        if (fontSize < 0) {
+            fontSize = 0;
+        }
+        textView.setTextSize(fontSize);
+        getWindow().getDecorView().setBackgroundColor(Color.RED);
+    }
+
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnIncreaseFont"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Increase Font Size"
+        android:onClick="increaseFontSize"
+        android:layout_below="@id/textView"
+        android:layout_marginTop="16dp"
+        tools:ignore="OnClick" />
+
+    <Button
+        android:id="@+id/btnDecreaseFont"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Decrease Font Size"
+        android:onClick="decreaseFontSize"
+        android:layout_below="@id/textView"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_toEndOf="@id/btnIncreaseFont"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello, Android!"
+        android:textSize="24sp"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
+
+
+
+
+Q2] Create table Project (id, name, dept, city). Create Application to perform the following operations. (using SQLite database).
+i] Add at least 5 records.
+ii] Display all the records.
+
+
+DataBaseHelper.java : 
+
+package com.example.slip1q2;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.Nullable;
+public class DataBaseHelper  extends SQLiteOpenHelper
+{
+    public static final String DATABASE_NAME="customer.db";
+    public static final String TABLE_NAME="customer_table";
+    public static final String COL_1="ID";
+    public static final String COL_2="NAME";
+    public static final String COL_3="ADDRESS";
+    public static final String COL_4="PHONENO";
+
+    public DataBaseHelper(@Nullable Context context) {
+        super(context,DATABASE_NAME, null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db)
+    {
+        db.execSQL("create table "+TABLE_NAME+"(ID INTEGER PRIMARY KEY,NAME TEXT,ADDRESS TEXT,PHONENO INTEGER)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        onCreate(db);
+    }
+    public boolean insertdata(String id, String name, String address, String phone) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1, id);
+        contentValues.put(COL_2, name);
+        contentValues.put(COL_3, address);
+        contentValues.put(COL_4, phone);
+
+        long result = db.insert(TABLE_NAME, null, contentValues);
+        if (result == -1)
+            return false;
+
+        else
+            return true;
+    }
+    public Cursor getAllData(){
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor res = database.rawQuery("select * from " +TABLE_NAME,null);
+        return res;
+    }
+}
+
+
+MainActivity.java : 
+
+package com.example.slip1q2;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    DataBaseHelper db;
+    EditText id, name, address,phone;
+    Button insert, view;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        db = new DataBaseHelper(this);
+
+        id=(EditText) findViewById(R.id.textView2);
+        name=(EditText) findViewById(R.id.textView5);
+        address=(EditText) findViewById(R.id.textView4);
+        phone=(EditText) findViewById(R.id.textView6);
+        insert=(Button) findViewById(R.id.button);
+        view=(Button) findViewById(R.id.button2);
+
+        AddData();
+        ViewAll();
+    }
+
+    public void ViewAll() {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor res= db.getAllData();
+                if (res.getCount()==0){
+                    showMessage("Error","Nothing found");
+                    return;
+
+                }
+                StringBuffer buffer=new StringBuffer();
+                while (res.moveToNext()){
+                    buffer.append("Id :"+res.getString(0)+"\n");
+                    buffer.append("Name :"+res.getString(1)+"\n");
+                    buffer.append("City :"+res.getString(2)+"\n");
+                    buffer.append("Dept  :"+res.getString(3)+"\n");
+                }
+                showMessage("Data",buffer.toString());
+            }
+        });
+    }
+
+    public void showMessage(String title, String Message) {
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(Message);
+        builder.show();
+    }
+
+    private void AddData() {
+        insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isinserted= db.insertdata(id.getText().toString(),name.getText().toString(),address.getText().toString(),phone.getText().toString());
+                if (isinserted==true)
+                    Toast.makeText(MainActivity.this,"Data inserted",Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(MainActivity.this,"Data is not inserted",Toast.LENGTH_LONG).show();
+
+            }
+        });
+    }
+
+}
+
+
+activity_main.xml : 
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.782"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.562" />
+
+    <EditText
+        android:id="@+id/textView6"
+        android:layout_width="313dp"
+        android:layout_height="57dp"
+        android:hint="Dept"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.44" />
+
+    <EditText
+        android:id="@+id/textView5"
+        android:layout_width="313dp"
+        android:layout_height="57dp"
+        android:hint="Name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.232" />
+
+    <EditText
+        android:id="@+id/textView4"
+        android:layout_width="313dp"
+        android:layout_height="57dp"
+        android:hint="City"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.338" />
+
+    <EditText
+        android:id="@+id/textView2"
+        android:layout_width="312dp"
+        android:layout_height="47dp"
+        android:hint="ID"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.147" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Insert"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.562" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

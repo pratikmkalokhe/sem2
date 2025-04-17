@@ -1,0 +1,199 @@
+Q1] Write an Android Program to demonstrate Activity life Cycle.
+
+
+MainActivity.java :
+
+package com.example.slip17q1;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Toast.makeText(getApplicationContext(),"OnStart() called",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(getApplicationContext(),"OnResume() called",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Toast.makeText(getApplicationContext(),"OnPause() called",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(getApplicationContext(),"OnStop() called",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(getApplicationContext(),"OnDestroy() called",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(getApplicationContext(),"OnRestart() called",Toast.LENGTH_LONG).show();
+    }
+
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+Q2] Write a PhoneGap application to create a contact.
+Options are:
+• Searching for Contacts
+• Cloning Contacts
+• Removing Contacts.
+
+
+Mainactivity.java :
+
+package com.example.slip17q2;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.view.View;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        findViewById(R.id.btnSearchContacts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkContactsPermission()) {
+                    searchContacts();
+                }
+            }
+        });
+
+        findViewById(R.id.btnCloneContact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Implement clone contact functionality
+                Toast.makeText(MainActivity.this, "Clone Contact functionality is not implemented yet.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.btnRemoveContact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Implement remove contact functionality
+                Toast.makeText(MainActivity.this, "Remove Contact functionality is not implemented yet.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean checkContactsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    PERMISSIONS_REQUEST_READ_CONTACTS);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                searchContacts();
+            } else {
+                Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void searchContacts() {
+        // TODO: Implement search contacts functionality
+        Toast.makeText(this, "Search Contacts functionality is not implemented yet.", Toast.LENGTH_SHORT).show();
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnSearchContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Contacts"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp" />
+
+    <Button
+        android:id="@+id/btnCloneContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clone Contact"
+        android:layout_below="@id/btnSearchContacts"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp" />
+
+    <Button
+        android:id="@+id/btnRemoveContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove Contact"
+        android:layout_below="@id/btnCloneContact"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp" />
+
+</RelativeLayout>

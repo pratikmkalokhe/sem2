@@ -1,0 +1,262 @@
+Q.1] Write an Java Android Program to Change the Image on the Screen.
+
+
+MainActivity.java :
+
+package com.example.slip22q1;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.ViewSwitcher;
+
+public class MainActivity extends AppCompatActivity {
+    private Button Previousbtn,Nextbtn;
+    private ImageSwitcher imagesw;
+    private int[] images={R.drawable.shivaji,R.drawable.sambhaji};
+    private int position=0;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Previousbtn=findViewById(R.id.Previousbtn);
+        Nextbtn=findViewById(R.id.Nextbtn);
+        imagesw=findViewById(R.id.imageView);
+
+        imagesw.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView imgVw=new ImageView(MainActivity.this);
+                imgVw.setImageResource(images[position]);
+                return imgVw;
+            }
+        });
+        imagesw.setInAnimation(this,android.R.anim.slide_in_left);
+        imagesw.setOutAnimation(this,android.R.anim.slide_out_right);
+
+        Previousbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(position>0)
+                    position--;
+                else if(position<0)
+                    position=0;
+                imagesw.setImageResource(images[position]);
+            }
+        });
+        Nextbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(position<images.length)
+                    position++;
+                if(position>images.length)
+                    position=images.length-1;
+                imagesw.setImageResource(images[position]);
+            }
+        });
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/Previousbtn"
+        android:layout_width="148dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="128dp"
+        android:text="Previous"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.868" />
+
+    <Button
+        android:id="@+id/Nextbtn"
+        android:layout_width="148dp"
+        android:layout_height="54dp"
+        android:text="Next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
+
+    <ImageSwitcher
+        android:id="@+id/imageView"
+        android:layout_width="366dp"
+        android:layout_height="509dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.193"
+        tools:srcCompat="@drawable/ic_launcher_background" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+Q.2] Perform following numeric operation according to user selection of radio
+button.
+
+MainActivity.java :
+
+package com.example.slip22q2;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberInput;
+    private RadioGroup operationRadioGroup;
+    private Button calculateButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.number_input);
+        operationRadioGroup = findViewById(R.id.operation_radio_group);
+        calculateButton = findViewById(R.id.calculate_button);
+
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performOperation();
+            }
+        });
+    }
+
+    private void performOperation() {
+        // Get the entered number
+        String numberString = numberInput.getText().toString();
+        if (numberString.isEmpty()) {
+            Toast.makeText(MainActivity.this, "Please enter a number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int number = Integer.parseInt(numberString);
+
+        // Check which operation is selected
+        int selectedId = operationRadioGroup.getCheckedRadioButtonId();
+        if (selectedId == -1) {
+            // No radio button is checked
+            Toast.makeText(MainActivity.this, "Please select an operation", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        switch (selectedId) {
+            case R.id.radio_even_odd:
+                checkEvenOrOdd(number);
+                break;
+            case R.id.radio_positive_negative:
+                checkPositiveOrNegative(number);
+                break;
+            case R.id.radio_square:
+                calculateSquare(number);
+                break;
+        }
+    }
+
+    private void checkEvenOrOdd(int number) {
+        if (number % 2 == 0) {
+            Toast.makeText(MainActivity.this, "Even", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "Odd", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkPositiveOrNegative(int number) {
+        if (number > 0) {
+            Toast.makeText(MainActivity.this, "Positive", Toast.LENGTH_SHORT).show();
+        } else if (number < 0) {
+            Toast.makeText(MainActivity.this, "Negative", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "Zero", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void calculateSquare(int number) {
+        int square = number * number;
+        Toast.makeText(MainActivity.this, "Square: " + square, Toast.LENGTH_SHORT).show();
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"
+        android:inputType="number" />
+
+    <RadioGroup
+        android:id="@+id/operation_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/number_input"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_even_odd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Even or Odd" />
+
+        <RadioButton
+            android:id="@+id/radio_positive_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Positive or Negative" />
+
+        <RadioButton
+            android:id="@+id/radio_square"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Square" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/calculate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/operation_radio_group"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Calculate" />
+
+</RelativeLayout>

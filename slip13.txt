@@ -1,0 +1,273 @@
+Q.1] Java android program to demonstrate Registration form with validation.
+
+
+MainActivity.java :
+
+package com.example.slip13q1;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+    private EditText nameEditText;
+    private EditText addressEditText;
+    private EditText mobileNoEditText;
+    private EditText ageEditText;
+    private Button registerButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nameEditText = findViewById(R.id.name);
+        addressEditText = findViewById(R.id.address);
+        mobileNoEditText = findViewById(R.id.mobile_no);
+        ageEditText = findViewById(R.id.age);
+        registerButton = findViewById(R.id.register_button);
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = nameEditText.getText().toString();
+                String address = addressEditText.getText().toString();
+                String mobileNo = mobileNoEditText.getText().toString();
+                String ageText = ageEditText.getText().toString();
+
+                if (name.isEmpty() || address.isEmpty() || mobileNo.isEmpty() || ageText.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please fill out all required fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!isValidMobileNo(mobileNo)) {
+                    Toast.makeText(MainActivity.this, "Please enter a valid mobile number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int age = Integer.parseInt(ageText);
+                if (age < 18) {
+                    Toast.makeText(MainActivity.this, "You must be at least 18 years old to register", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Registration successful, do something here
+                Toast.makeText(MainActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean isValidMobileNo(String mobileNo) {
+        // Add your validation logic here
+        return mobileNo.length() == 10;
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name" />
+
+    <EditText
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Address" />
+
+    <EditText
+        android:id="@+id/mobile_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mobile No."
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Age"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Register" />
+
+</LinearLayout>
+
+
+
+
+Q.2] Write a Java Android Program to Demonstrate List View Activity with all operations Such as: Insert, Delete, Search.
+
+
+MainActivity.java :
+
+package com.example.slip13q2;
+
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+import java.util.ArrayList;
+
+public class MainActivity extends ListActivity {
+
+    private ArrayList<String> itemList;
+    private ArrayAdapter<String> adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        itemList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemList);
+        setListAdapter(adapter);
+    }
+
+    public void addItem(View v) {
+        final EditText itemEditText = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Add a new item")
+                .setMessage("What do you want to add?")
+                .setView(itemEditText)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String newItem = itemEditText.getText().toString();
+                        if (!newItem.trim().isEmpty()) {
+                            itemList.add(newItem);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Please enter a valid item", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+
+    public void deleteItem(View v) {
+        final int selectedItemPosition = getListView().getCheckedItemPosition();
+        if (selectedItemPosition != ListView.INVALID_POSITION) {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Delete Item")
+                    .setMessage("Are you sure you want to delete this item?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            itemList.remove(selectedItemPosition);
+                            adapter.notifyDataSetChanged();
+                            Log.d("DeleteItem", "Item deleted: " + selectedItemPosition);
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .create();
+            dialog.show();
+        } else {
+            Toast.makeText(this, "Please select an item to delete", Toast.LENGTH_SHORT).show();
+            Log.d("DeleteItem", "No item selected for deletion");
+        }
+    }
+
+    public void searchItem(View v) {
+        final EditText searchEditText = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Search for an item")
+                .setMessage("Enter the item you want to search for:")
+                .setView(searchEditText)
+                .setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String searchItem = searchEditText.getText().toString().trim();
+                        if (!searchItem.isEmpty()) {
+                            int index = itemList.indexOf(searchItem);
+                            if (index != -1) {
+                                getListView().setItemChecked(index, true);
+                                getListView().smoothScrollToPosition(index);
+                                Toast.makeText(MainActivity.this, "Item  found", Toast.LENGTH_SHORT).show();
+
+                                Log.d("SearchItem", "Item found: " + searchItem);
+                            } else {
+                                Toast.makeText(MainActivity.this, "Item not found", Toast.LENGTH_SHORT).show();
+                                Log.d("SearchItem", "Item not found: " + searchItem);
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "Please enter an item to search", Toast.LENGTH_SHORT).show();
+                            Log.d("SearchItem", "Empty search query");
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Item"
+        android:onClick="addItem"/>
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Item"
+        android:layout_below="@id/addButton"
+        android:layout_marginTop="16dp"
+        android:onClick="deleteItem"/>
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Item"
+        android:layout_below="@id/deleteButton"
+        android:layout_marginTop="16dp"
+        android:onClick="searchItem"/>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchButton"
+        android:layout_marginTop="16dp"/>
+</RelativeLayout>

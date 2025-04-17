@@ -1,0 +1,267 @@
+Q.1) Java Android Program to Demonstrate Alert Dialog Box.
+
+
+MainActivity.java :
+
+package com.example.slip5q1;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button showDialogButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        showDialogButton = findViewById(R.id.showDialogButton);
+
+        showDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog();
+            }
+        });
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Dialog Box ");
+        builder.setMessage("This is a dialog box message.");
+        builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = builder.create();
+        builder.show();
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/showDialogButton"
+        android:text="Show Dialog Box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+Q.2) Create an Android application which will ask the user to input his / her name. A message should display the two items concatenated in a label. Change the format of the label using radio buttons and check boxes for selection. The user can make the label text bold, underlined or italic as well as change its color. Also include buttons to display the message in the label, clear the text boxes as well as label. Finally exit.
+
+
+MainActivity.java :
+
+package com.example.slip5q2;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText nameEditText;
+    private TextView labelTextView;
+    private RadioButton labelFormatNormal, labelFormatBold, labelFormatItalic, labelFormatUnderline;
+    private CheckBox labelColorCheckBox;
+    private Button displayMessageButton, clearButton, exitButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nameEditText = findViewById(R.id.nameEditText);
+        labelTextView = findViewById(R.id.labelTextView);
+        labelFormatNormal = findViewById(R.id.labelFormatNormal);
+        labelFormatBold = findViewById(R.id.labelFormatBold);
+        labelFormatItalic = findViewById(R.id.labelFormatItalic);
+        labelFormatUnderline = findViewById(R.id.labelFormatUnderline);
+        labelColorCheckBox = findViewById(R.id.labelColorCheckBox);
+        displayMessageButton = findViewById(R.id.displayMessageButton);
+        clearButton = findViewById(R.id.clearButton);
+        exitButton = findViewById(R.id.exitButton);
+
+        // Set default label format
+        labelFormatNormal.setChecked(true);
+
+        // Set up label color checkbox
+        labelColorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    labelTextView.setTextColor(Color.BLUE);
+                } else {
+                    labelTextView.setTextColor(Color.BLACK);
+                }
+            }
+        });
+
+        // Set up display message button
+        displayMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = nameEditText.getText().toString();
+                if (name.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please enter your name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String labelFormat = "";
+                if (labelFormatBold.isChecked()) {
+                    labelTextView.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+                }
+                if (labelFormatItalic.isChecked()) {
+                    labelTextView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+                }
+                if (labelFormatUnderline.isChecked()) {
+                    labelTextView.setPaintFlags(labelTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                }
+
+                if (labelFormatBold.isChecked() && labelFormatItalic.isChecked()) {
+                    labelTextView.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD_ITALIC));
+                }
+                labelTextView.setText(String.format("%s ", name));
+            }
+        });
+
+        // Set up clear button
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nameEditText.setText("");
+                labelTextView.setText("");
+                labelFormatNormal.setChecked(true);
+                labelColorCheckBox.setChecked(false);
+            }
+        });
+
+        // Set up exit button
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+}
+
+
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name" />
+
+    <RadioGroup
+        android:id="@+id/labelFormatRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/labelFormatNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal" />
+
+        <RadioButton
+            android:id="@+id/labelFormatBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bold" />
+
+        <RadioButton
+            android:id="@+id/labelFormatItalic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Italic" />
+
+        <RadioButton
+            android:id="@+id/labelFormatUnderline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Underline" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/labelColorCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Change color" />
+
+    <TextView
+        android:id="@+id/labelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text=""
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/displayMessageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Display message" />
+
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Clear" />
+
+    <Button
+        android:id="@+id/exitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Exit" />
+</LinearLayout>
