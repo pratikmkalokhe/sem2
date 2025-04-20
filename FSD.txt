@@ -1,0 +1,3021 @@
+//slip 1
+Q.1) Create an HTML form for Login and write a JavaScript to validate email ID and Password using Regular Expression.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Form</title>
+</head>
+<body>
+
+  <h2>Login Form</h2>
+  <form onsubmit="return validateForm()">
+    <label for="email">Email:</label><br>
+    <input type="text" id="email" name="email"><br><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+
+    <div id="error-msg" style="color: red;"></div><br>
+
+    <input type="submit" value="Login">
+  </form>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+//script.js
+
+function validateForm() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorMsg = document.getElementById("error-msg");
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!emailRegex.test(email)) {
+    errorMsg.textContent = "Invalid email format.";
+    return false;
+  }
+
+  if (!passwordRegex.test(password)) {
+    errorMsg.textContent = "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character.";
+    return false;
+  }
+
+  errorMsg.textContent = "";
+  alert("Login Successful!");
+  return true;
+}
+
+
+Q.2) Create an HTML form that contain the Student Registration details and write a JavaScript to validate Student first and last name as it should not contain other than alphabets and age should be between 18 to 50.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Registration</title>
+</head>
+<body>
+
+  <h2>Student Registration Form</h2>
+  <form onsubmit="return validateStudentForm()">
+    <label for="fname">First Name:</label><br>
+    <input type="text" id="fname" name="fname"><br><br>
+
+    <label for="lname">Last Name:</label><br>
+    <input type="text" id="lname" name="lname"><br><br>
+
+    <label for="age">Age:</label><br>
+    <input type="number" id="age" name="age"><br><br>
+
+    <div id="error-msg" style="color: red;"></div><br>
+
+    <input type="submit" value="Register">
+  </form>
+
+  <script src="validate.js"></script>
+</body>
+</html>
+
+
+//validate.js
+
+function validateStudentForm() {
+  const fname = document.getElementById("fname").value.trim();
+  const lname = document.getElementById("lname").value.trim();
+  const age = parseInt(document.getElementById("age").value.trim(), 10);
+  const errorMsg = document.getElementById("error-msg");
+
+  const nameRegex = /^[A-Za-z]+$/;
+
+  if (!nameRegex.test(fname)) {
+    errorMsg.textContent = "First name should contain only alphabets.";
+    return false;
+  }
+
+  if (!nameRegex.test(lname)) {
+    errorMsg.textContent = "Last name should contain only alphabets.";
+    return false;
+  }
+
+  if (isNaN(age) || age < 18 || age > 50) {
+    errorMsg.textContent = "Age must be a number between 18 and 50.";
+    return false;
+  }
+
+  errorMsg.textContent = "";
+  alert("Registration Successful!");
+  return true;
+}
+
+
+
+
+//slip 2
+Q.1) Create a Node.js file that will convert the output "Full Stack!" into reverse string.
+
+//reverseString.js
+
+// Original string
+const originalString = "Full Stack!";
+
+// Function to reverse a string
+function reverseString(str) {
+  return str.split('').reverse().join('');
+}
+
+// Calling the function
+const reversed = reverseString(originalString);
+
+// Output the reversed string
+console.log("Original String:", originalString);
+console.log("Reversed String:", reversed);
+
+How to Run: node reverseString.js
+
+
+Q.2) Using node js create a web page to read two file names from user and append contents of first file into second file.
+
+project-folder/
+│
+├── app.js          ← Node.js server
+├── public/
+│   └── index.html  ← HTML form
+
+//app.js
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+const querystring = require('querystring');
+
+const PORT = 3000;
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET') {
+    // Serve HTML form
+    fs.readFile('./public/index.html', (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        res.end('Error loading form.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(data);
+      }
+    });
+  }
+
+  else if (req.method === 'POST') {
+    // Handle form submission
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+
+    req.on('end', () => {
+      const formData = querystring.parse(body);
+      const file1 = formData.file1;
+      const file2 = formData.file2;
+
+      fs.readFile(file1, 'utf8', (err, data) => {
+        if (err) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end(`Error reading file: ${file1}`);
+          return;
+        }
+
+        fs.appendFile(file2, data, (err) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end(`Error writing to file: ${file2}`);
+          } else {
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end(`Content from "${file1}" appended to "${file2}" successfully!`);
+          }
+        });
+      });
+    });
+  }
+
+  else {
+    res.writeHead(405);
+    res.end('Method Not Allowed');
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+//public/index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Append File Contents</title>
+</head>
+<body>
+  <h2>Append File Contents</h2>
+  <form action="/" method="POST">
+    <label for="file1">Source File Name:</label><br>
+    <input type="text" id="file1" name="file1" placeholder="file1.txt" required><br><br>
+
+    <label for="file2">Target File Name:</label><br>
+    <input type="text" id="file2" name="file2" placeholder="file2.txt" required><br><br>
+
+    <input type="submit" value="Append">
+  </form>
+</body>
+</html>
+
+Create the two files (e.g., file1.txt and file2.txt) in the project folder.
+How to Run: node app.js
+
+
+
+
+//slip 3
+Q.1) Using node js create a User Login System.
+
+user-login/
+│
+├── app.js           ← Node.js server
+├── login.html       ← HTML login form
+
+//login.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Login</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <form method="POST" action="/login">
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <input type="submit" value="Login">
+  </form>
+</body>
+</html>
+
+
+//app.js
+
+const http = require('http');
+const fs = require('fs');
+const querystring = require('querystring');
+
+// Hardcoded credentials
+const VALID_USERNAME = "admin";
+const VALID_PASSWORD = "12345";
+
+const server = http.createServer((req, res) => {
+  if (req.method === "GET" && req.url === "/") {
+    // Serve the login form
+    fs.readFile("login.html", (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        res.end("Error loading login form");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+  } else if (req.method === "POST" && req.url === "/login") {
+    // Handle login
+    let body = "";
+    req.on("data", chunk => {
+      body += chunk.toString();
+    });
+
+    req.on("end", () => {
+      const { username, password } = querystring.parse(body);
+
+      if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+        res.writeHead(200, { "Content-Type": "text/html" });
+        res.end("<h2>Login Successful!</h2>");
+      } else {
+        res.writeHead(401, { "Content-Type": "text/html" });
+        res.end("<h2>Invalid username or password.</h2>");
+      }
+    });
+  } else {
+    res.writeHead(404);
+    res.end("Page Not Found");
+  }
+});
+
+server.listen(3000, () => {
+  console.log("Server running at http://localhost:3000");
+});
+
+How to Run: node app.js
+
+
+Q.2) Create a node.js file that Select all records from the "Teacher" table, and find the Teachers whose salary is greater than 20,000.
+
+//teacherFilter.js
+
+// Simulated "Teacher" table (array of objects)
+const teachers = [
+  { id: 1, name: "Alice", subject: "Math", salary: 18000 },
+  { id: 2, name: "Bob", subject: "Science", salary: 22000 },
+  { id: 3, name: "Charlie", subject: "English", salary: 25000 },
+  { id: 4, name: "David", subject: "History", salary: 19500 },
+  { id: 5, name: "Eve", subject: "Computer", salary: 30000 }
+];
+
+// Display all teachers
+console.log("All Teachers:");
+teachers.forEach(t => {
+  console.log(`ID: ${t.id}, Name: ${t.name}, Subject: ${t.subject}, Salary: ${t.salary}`);
+});
+
+// Filter teachers with salary > 20000
+const highPaid = teachers.filter(t => t.salary > 20000);
+
+console.log("\nTeachers with Salary > 20000:");
+highPaid.forEach(t => {
+  console.log(`ID: ${t.id}, Name: ${t.name}, Salary: ${t.salary}`);
+});
+
+How to Run: node teacherFilter.js
+
+
+
+
+//slip 4
+Q.1) Using node js create an eLearning System.
+
+e-learning/
+│
+├── app.js             ← Node.js server
+├── index.html         ← Home page with course list
+├── course.html        ← Course detail page (template)
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>eLearning System</title>
+</head>
+<body>
+  <h1>Welcome to the eLearning System</h1>
+  <ul>
+    <li><a href="/course?name=JavaScript">JavaScript</a></li>
+    <li><a href="/course?name=Python">Python</a></li>
+    <li><a href="/course?name=Java">Java</a></li>
+    <li><a href="/course?name=C">C Programming</a></li>
+  </ul>
+</body>
+</html>
+
+
+//course.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Details</title>
+</head>
+<body>
+  <h1>Course: {{courseName}}</h1>
+  <p>This is a simple description for the <strong>{{courseName}}</strong> course.</p>
+  <a href="/">Back to Home</a>
+</body>
+</html>
+
+
+//app.js
+
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+
+const PORT = 3000;
+
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
+
+  if (pathname === "/") {
+    // Serve homepage
+    fs.readFile("index.html", (err, data) => {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+
+  } else if (pathname === "/course") {
+    // Serve course details
+    const courseName = parsedUrl.query.name || "Unknown";
+
+    fs.readFile("course.html", "utf-8", (err, template) => {
+      const content = template.replace(/{{courseName}}/g, courseName);
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(content);
+    });
+
+  } else {
+    // Not Found
+    res.writeHead(404, { "Content-Type": "text/html" });
+    res.end("<h1>404 Not Found</h1>");
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+});
+
+How to Run: node app.js
+
+
+Q.2) Create an HTML form using AngularJS that contain the Student Registration details and validate Student first and last name as it should not contain other than alphabets and age should be between 18 to 50 and display greeting message depending on current time using ng-show (e.g. Good Morning, Good Afternoon, etc.)(Use AJAX).
+
+student-registration/
+│
+├── index.html        ← Main HTML file
+└── app.js            ← AngularJS scrip
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="studentApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Registration Form</title>
+  <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+  <style>
+    .form-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body ng-controller="RegistrationController">
+
+  <div class="form-container">
+    <h2>Student Registration</h2>
+
+    <form name="registrationForm" ng-submit="submitForm()" novalidate>
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" ng-model="student.firstName" required pattern="[A-Za-z]+" ng-class="{'invalid': registrationForm.firstName.$invalid}" />
+      <span ng-show="registrationForm.firstName.$touched && registrationForm.firstName.$invalid">First name is required and should only contain alphabets.</span>
+      <br><br>
+
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" ng-model="student.lastName" required pattern="[A-Za-z]+" ng-class="{'invalid': registrationForm.lastName.$invalid}" />
+      <span ng-show="registrationForm.lastName.$touched && registrationForm.lastName.$invalid">Last name is required and should only contain alphabets.</span>
+      <br><br>
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" ng-model="student.age" required min="18" max="50" />
+      <span ng-show="registrationForm.age.$touched && (registrationForm.age.$invalid || student.age < 18 || student.age > 50)">Age should be between 18 and 50.</span>
+      <br><br>
+
+      <button type="submit" ng-disabled="registrationForm.$invalid">Register</button>
+    </form>
+
+    <div class="message" ng-show="greetingMessage">
+      <h3>{{greetingMessage}}</h3>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+//app.js
+
+// Define AngularJS app
+angular.module('studentApp', [])
+  .controller('RegistrationController', ['$scope', '$http', function($scope, $http) {
+    // Define student object
+    $scope.student = {};
+
+    // Function to get the current time and display appropriate greeting
+    $scope.getGreetingMessage = function() {
+      var currentTime = new Date().getHours();
+      if (currentTime >= 0 && currentTime < 12) {
+        return "Good Morning!";
+      } else if (currentTime >= 12 && currentTime < 18) {
+        return "Good Afternoon!";
+      } else {
+        return "Good Evening!";
+      }
+    };
+
+    // Call function to display greeting
+    $scope.greetingMessage = $scope.getGreetingMessage();
+
+    // Function to handle form submission
+    $scope.submitForm = function() {
+      // Here, we simulate an AJAX request
+      if ($scope.registrationForm.$valid) {
+        $http.post('/submitStudentDetails', $scope.student)
+          .then(function(response) {
+            console.log('Form submitted successfully');
+            alert('Student Registered Successfully!');
+          }, function(error) {
+            console.error('Error during form submission:', error);
+            alert('Error while registering student.');
+          });
+      }
+    };
+  }]);
+
+How to Run:
+Save the index.html and app.js files in a folder.
+Open index.html in your browser.
+Fill out the form, and it will show validation and a greeting message.
+
+
+
+
+//slip 5
+Q.1) Create a Node.js file that writes an HTML form, with an upload field. 
+
+npm install multer
+
+//app.js
+
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+
+// Create an Express app
+const app = express();
+
+// Set up multer storage to specify where to save the uploaded files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');  // Upload folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));  // Save with unique name
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Serve the HTML form
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Upload File</h1>
+    <form ref='uploadForm' 
+      action='/upload' 
+      method='post' 
+      encType="multipart/form-data">
+        <input type="file" name="fileUpload" />
+        <input type="submit" value="Upload!" />
+    </form>
+  `);
+});
+
+// Handle the file upload
+app.post('/upload', upload.single('fileUpload'), (req, res) => {
+  if (req.file) {
+    res.send(`<h2>File uploaded successfully! File path: ${req.file.path}</h2>`);
+  } else {
+    res.send('<h2>File upload failed.</h2>');
+  }
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server running at http://localhost:3000');
+});
+
+Run the Code: node app.js
+
+
+Q.2) Using angular js create a SPA to carry out validation for a username entered in a textbox. If the textbox is blank, alert “Enter username”. If the number of characters is less than three, alert ‟ Username is too short”. If value entered is appropriate the print “Valid username” and password should be minimum 8 characters.
+
+angular-validation/
+│
+├── index.html       ← Main HTML file
+└── app.js           ← AngularJS script
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="validationApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Validation SPA</title>
+  <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+  <style>
+    .form-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body ng-controller="ValidationController">
+
+  <div class="form-container">
+    <h2>Login Form</h2>
+
+    <form ng-submit="validateForm()">
+      <label for="username">Username:</label>
+      <input type="text" id="username" ng-model="username" required />
+      <br><br>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" ng-model="password" required />
+      <br><br>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div class="message" ng-show="validationMessage">
+      <h3>{{validationMessage}}</h3>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+//app.js
+
+// Define the AngularJS module and controller
+angular.module('validationApp', [])
+  .controller('ValidationController', ['$scope', function($scope) {
+    
+    // Function to validate the form
+    $scope.validateForm = function() {
+      // Check for blank username
+      if (!$scope.username) {
+        alert("Enter username");
+      }
+      // Check if username length is less than 3 characters
+      else if ($scope.username.length < 3) {
+        alert("Username is too short");
+      }
+      // Check if the username is valid
+      else {
+        alert("Valid username");
+      }
+
+      // Check if password is less than 8 characters
+      if ($scope.password && $scope.password.length < 8) {
+        alert("Password must be at least 8 characters");
+      }
+      // Check if the password is valid
+      else if ($scope.password) {
+        alert("Valid password");
+      }
+    };
+  }]);
+
+Running the Code
+Save the files (index.html and app.js).
+Open index.html in your browser.
+Enter values in the username and password fields and submit the form.
+
+
+
+
+//slip 6
+Q.1) Write angular JS by using ng-click directive to display an alert message after clicking the element.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="alertApp">
+<head>
+  <meta charset="UTF-8">
+  <title>AngularJS ng-click Example</title>
+  <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+  <style>
+    .button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body ng-controller="AlertController">
+
+  <div>
+    <button class="button" ng-click="showAlert()">Click Me</button>
+  </div>
+
+</body>
+</html>
+
+
+//app.js
+
+// Define the AngularJS module and controller
+angular.module('alertApp', [])
+  .controller('AlertController', ['$scope', function($scope) {
+    
+    // Function to display an alert when the button is clicked
+    $scope.showAlert = function() {
+      alert("You clicked the button!");
+    };
+
+  }]);
+
+
+Q.2) Create a Node.js file that opens the requested file and returns the content to the client. If anything goes wrong, throw a 404 error.
+
+//app.js
+
+// Import required modules
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Create the HTTP server
+const server = http.createServer((req, res) => {
+  // Define the file path based on the URL requested
+  const filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+
+  // Check if the file exists
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      // If an error occurs (e.g., file not found), send a 404 error
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('404 File Not Found');
+    } else {
+      // If the file is found, return the content to the client
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    }
+  });
+});
+
+// Start the server on port 3000
+server.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});
+
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Node.js File Read Example</title>
+</head>
+<body>
+  <h1>Welcome to Node.js File Reading Example</h1>
+  <p>This is the content of index.html served by Node.js!</p>
+</body>
+</html>
+
+Run the Node.js Server: node app.js
+
+
+
+
+//slip 7
+Q.1) Create angular JS Application that show the current Date and Time of the System. (Use Interval Service)
+
+angular-time/
+├── index.html    ← Main HTML file
+└── app.js        ← AngularJS script
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="timeApp">
+<head>
+  <meta charset="UTF-8">
+  <title>AngularJS Date & Time</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body ng-controller="TimeController">
+
+  <h2>Current Date and Time</h2>
+  <p>{{ currentTime }}</p>
+
+</body>
+</html>
+
+
+//app.js
+
+// Define the AngularJS app
+angular.module('timeApp', [])
+  .controller('TimeController', ['$scope', '$interval', function($scope, $interval) {
+    
+    function updateTime() {
+      $scope.currentTime = new Date().toLocaleString();
+    }
+
+    // Call updateTime every 1 second
+    $interval(updateTime, 1000);
+
+    // Initialize the time immediately
+    updateTime();
+  }]);
+
+How to Run It in VS Code:
+Create the two files: index.html and app.js in a folder.
+Open the folder in Visual Studio Code.
+Right-click on index.html and select “Open with Live Server” (or just open it in your browser).
+You’ll see the current date and time updating every second!
+
+
+Q.2) Create a node js file named main.js for event-driven application. There should be a main loop that listens for events, and then triggers a callback function when one of those events is detected.
+
+//main.js
+
+// Load the 'events' module
+const events = require('events');
+
+// Create an event emitter object
+const eventEmitter = new events.EventEmitter();
+
+// Define a callback function for the custom event
+function onTick() {
+  console.log('Tick event triggered!');
+}
+
+// Bind the 'tick' event with the callback function
+eventEmitter.on('tick', onTick);
+
+// Simulate a main loop using setInterval
+let counter = 0;
+setInterval(() => {
+  counter++;
+  console.log(`Main loop count: ${counter}`);
+
+  // Trigger the event every 5 ticks
+  if (counter % 5 === 0) {
+    eventEmitter.emit('tick');
+  }
+
+  // Optional: stop after 15 ticks
+  if (counter === 15) {
+    console.log('Main loop stopped.');
+    process.exit(); // Exit the application
+  }
+}, 1000); // Run every 1 second
+
+How to Run This in VS Code.
+Step-by-Step:
+Open VS Code.
+Create a folder (e.g., event-app) and open it in VS Code.
+Inside the folder, create a file named main.js.
+Paste the code above into main.js.
+Open the terminal in VS Code:
+Go to Terminal > New Terminal (or press Ctrl + `).
+
+Run the file using: node main.js
+
+
+
+
+//slip 8
+Q.1) Create a Simple Web Server using node js.
+
+//server.js
+
+// Import the built-in 'http' module
+const http = require('http');
+
+// Create a web server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' }); // Set status and content type
+  res.end('Hello! This is a simple Node.js web server.'); // Send response
+});
+
+// Start the server and listen on port 3000
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
+});
+
+Run the server using: node server.js
+
+
+Q.2) Using angular js display the 10 student details in Table format. (using ng-repeat directive use Array to store data)
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="studentApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Table with AngularJS</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="StudentController">
+
+  <h2>Student Details</h2>
+
+  <table border="1" cellpadding="10">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Course</th>
+    </tr>
+    <tr ng-repeat="student in students">
+      <td>{{ student.id }}</td>
+      <td>{{ student.name }}</td>
+      <td>{{ student.age }}</td>
+      <td>{{ student.course }}</td>
+    </tr>
+  </table>
+
+  <script>
+    // Define AngularJS module and controller
+    angular.module('studentApp', [])
+      .controller('StudentController', function($scope) {
+        $scope.students = [
+          { id: 1, name: 'Alice', age: 20, course: 'Math' },
+          { id: 2, name: 'Bob', age: 21, course: 'Physics' },
+          { id: 3, name: 'Charlie', age: 22, course: 'Chemistry' },
+          { id: 4, name: 'David', age: 19, course: 'Biology' },
+          { id: 5, name: 'Eva', age: 20, course: 'English' },
+          { id: 6, name: 'Frank', age: 23, course: 'History' },
+          { id: 7, name: 'Grace', age: 21, course: 'Geography' },
+          { id: 8, name: 'Helen', age: 22, course: 'Computer Science' },
+          { id: 9, name: 'Ivan', age: 20, course: 'Art' },
+          { id: 10, name: 'Jane', age: 19, course: 'Economics' }
+        ];
+      });
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 9
+Q.1) Create a Node.js file that writes an HTML form, with a concatenate two string.
+
+//formConcat.js
+
+const http = require('http');
+const url = require('url');
+const querystring = require('querystring');
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET') {
+    const parsedUrl = url.parse(req.url);
+    const query = querystring.parse(parsedUrl.query);
+
+    // HTML form
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.write(`
+      <form method="GET">
+        <label>Enter First String:</label><br>
+        <input type="text" name="str1"><br><br>
+        <label>Enter Second String:</label><br>
+        <input type="text" name="str2"><br><br>
+        <input type="submit" value="Concatenate">
+      </form>
+    `);
+
+    // Show result if both strings are entered
+    if (query.str1 && query.str2) {
+      const result = query.str1 + query.str2;
+      res.write(`<h3>Concatenated String: ${result}</h3>`);
+    }
+
+    res.end();
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
+});
+
+Run the server: node formConcat.js
+
+
+Q.2) Create a Node.js file that opens the requested file and returns the content to the client If anything goes wrong, throw a 404 error.
+
+//app.js
+
+// Import required modules
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Create the HTTP server
+const server = http.createServer((req, res) => {
+  // Define the file path based on the URL requested
+  const filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+
+  // Check if the file exists
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      // If an error occurs (e.g., file not found), send a 404 error
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('404 File Not Found');
+    } else {
+      // If the file is found, return the content to the client
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    }
+  });
+});
+
+// Start the server on port 3000
+server.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});
+
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Node.js File Read Example</title>
+</head>
+<body>
+  <h1>Welcome to Node.js File Reading Example</h1>
+  <p>This is the content of index.html served by Node.js!</p>
+</body>
+</html>
+
+Run the Node.js Server: node app.js
+
+
+
+
+//slip 10
+Q.1) Create a Node.js file that demonstrate create college database and table in MySQL.
+
+//collegeDB.js
+
+// Simulated "college database"
+const collegeDB = {
+  students: []
+};
+
+// Function to create table (just initialize array)
+function createTable() {
+  console.log("Students table created.");
+}
+
+// Function to add a student
+function addStudent(name, age, department) {
+  const id = collegeDB.students.length + 1;
+  const student = { id, name, age, department };
+  collegeDB.students.push(student);
+  console.log("Student added:", student);
+}
+
+// Function to show all students
+function showStudents() {
+  console.log("\nAll Students:");
+  collegeDB.students.forEach(student => {
+    console.log(`ID: ${student.id}, Name: ${student.name}, Age: ${student.age}, Dept: ${student.department}`);
+  });
+}
+
+// Simulate usage
+createTable();
+addStudent("Alice", 20, "Computer Science");
+addStudent("Bob", 22, "Physics");
+addStudent("Charlie", 19, "Math");
+
+showStudents();
+
+Run the code with: node collegeDB.js
+
+
+Q.2) Write node js script to build Your Own Node.js Module. Use require (‘http’) module is a built in Node module that invokes the functionality of the HTTP library to create a local server. Also use the export statement to make functions in your module available externally. Create a new text file to contain the functions in your module called, “modules.js” and add this function to return today’s date and time.
+
+// modules.js
+
+function getCurrentDateTime() {
+  const currentDate = new Date();
+  return currentDate.toString(); // Returns the current date and time as a string
+}
+
+// Export the function so it can be used in other files
+module.exports = {
+  getCurrentDateTime
+};
+
+
+// app.js
+
+const http = require('http');         // Built-in HTTP module
+const { getCurrentDateTime } = require('./modules');  // Import custom module
+
+// Create an HTTP server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write('<h1>Welcome to My Node.js Server</h1>');
+  
+  // Get the current date and time from the custom module
+  const currentDateTime = getCurrentDateTime();
+  res.write(`<p>Current Date and Time: ${currentDateTime}</p>`);
+
+  res.end();
+});
+
+// Set the server to listen on port 3000
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
+});
+
+Run the application by typing: node app.js
+
+
+
+
+//slip 11
+Q.1) Create a Node.js file that demonstrates create Movie database and table in MySQL.
+
+//createMovieDB.js
+
+const mysql = require('mysql');
+
+// Create MySQL connection
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',       // Your MySQL username
+  password: '',       // Your MySQL password (leave empty if none)
+});
+
+// Connect to MySQL
+connection.connect(err => {
+  if (err) throw err;
+  console.log("Connected to MySQL!");
+
+  // Create database
+  connection.query("CREATE DATABASE IF NOT EXISTS movieDB", (err, result) => {
+    if (err) throw err;
+    console.log("Database 'movieDB' created or already exists.");
+
+    // Use the created database
+    connection.changeUser({ database: 'movieDB' }, err => {
+      if (err) throw err;
+
+      // Create table for movies
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS movies (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(100),
+          genre VARCHAR(50),
+          year INT,
+          director VARCHAR(100)
+        )
+      `;
+      
+      connection.query(createTableQuery, (err, result) => {
+        if (err) throw err;
+        console.log("Table 'movies' created or already exists.");
+
+        // Optionally, insert sample data
+        const insertDataQuery = `
+          INSERT INTO movies (title, genre, year, director)
+          VALUES ('Inception', 'Sci-Fi', 2010, 'Christopher Nolan'),
+                 ('The Matrix', 'Sci-Fi', 1999, 'Lana Wachowski, Lilly Wachowski'),
+                 ('The Godfather', 'Crime', 1972, 'Francis Ford Coppola');
+        `;
+        
+        connection.query(insertDataQuery, (err, result) => {
+          if (err) throw err;
+          console.log("Sample movie data inserted.");
+
+          connection.end(); // Close the connection
+        });
+      });
+    });
+  });
+});
+
+Install MySQL Driver:
+npm init -y    # Run this if you haven't initialized your project yet
+npm install mysql
+
+Run the script: node createMovieDB.js
+
+
+Q.2) Write node js application that transfer a file as an attachment on web and enables browser to prompt the user to download file using express js.
+
+/your-project-folder
+  |-- app.js            # Your main server file
+  |-- example-file.txt  # Example file to be served (you can use any file)
+
+//app.js
+
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+// Serve the file as an attachment for download
+app.get('/download', (req, res) => {
+  const filePath = path.join(__dirname, 'example-file.txt');  // Path to the file you want to serve
+  res.download(filePath, 'example-file.txt', (err) => {
+    if (err) {
+      console.error("Error while downloading file:", err);
+      res.status(500).send("Error in file download.");
+    }
+  });
+});
+
+// Home route to explain how to download
+app.get('/', (req, res) => {
+  res.send('<h1>Welcome to the File Download Server</h1>' +
+    '<p>Click the link below to download the file:</p>' +
+    '<a href="/download">Download Example File</a>');
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+
+
+//example-file.txt
+
+This is an example file. You can download it using the Node.js server.
+
+Steps to Run in VS Code:
+Create a project folder (e.g., file-download-app).
+Inside that folder, create the app.js file and paste the code above.
+Create a file named example-file.txt with some content (or use any file you like).
+Open VS Code and navigate to the folder with your app.js file.
+Open Terminal in VS Code (Ctrl + ~ or Terminal > New Terminal).
+
+Run the application: node app.js
+
+
+
+
+//slip 12
+Q.1) Create a node.js file that Select all records from the "customers" table, and display the result object on console.
+
+npm init -y           # Initialize a Node.js project (if you haven't already)
+npm install sqlite3   # Install SQLite3 package for Node.js
+
+/your-project-folder
+  |-- app.js          # Node.js script for interacting with SQLite
+  |-- database.db     # SQLite database file (you will create it)
+
+//app.js
+
+const sqlite3 = require('sqlite3').verbose();
+
+// Connect to the SQLite database (it will create the file if it doesn't exist)
+const db = new sqlite3.Database('./database.db', (err) => {
+  if (err) {
+    console.error('Error opening database:', err.message);
+  } else {
+    console.log('Connected to the SQLite database.');
+  }
+});
+
+// Create the "customers" table (if it doesn't already exist) and insert some data
+db.serialize(() => {
+  // Create the table
+  db.run(`CREATE TABLE IF NOT EXISTS customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT,
+    phone TEXT
+  )`);
+
+  // Insert some sample data (only if the table is empty)
+  db.get('SELECT COUNT(*) AS count FROM customers', (err, row) => {
+    if (row.count === 0) {
+      const stmt = db.prepare('INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)');
+      stmt.run('John Doe', 'john.doe@example.com', '123-456-7890');
+      stmt.run('Jane Smith', 'jane.smith@example.com', '234-567-8901');
+      stmt.run('Alice Brown', 'alice.brown@example.com', '345-678-9012');
+      stmt.finalize();
+    }
+  });
+
+  // Select all records from the "customers" table
+  db.all('SELECT * FROM customers', [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    // Log the result object to the console
+    console.log('All records from "customers" table:', rows);
+  });
+});
+
+// Close the database connection
+db.close((err) => {
+  if (err) {
+    console.error('Error closing the database:', err.message);
+  } else {
+    console.log('Database connection closed.');
+  }
+});
+
+Step 1: 
+Run the Application: node app.js
+
+Step 2: 
+View the Database Content
+Using SQLite Command Line: sqlite3 database.db
+
+Then run: SELECT * FROM customers;
+
+Using SQLite3 Browser:
+You can use any SQLite3 browser tool (like DB Browser for SQLite) to open the database.db file and visually inspect the contents.
+
+
+Q.2) Create an HTML form for Student Feedback Form with Name, Email ID, Mobile No., feedback (Not good, good, very good, excellent) and write a JavaScript to validate all field using Regular Expression.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Feedback Form</title>
+</head>
+<body>
+
+  <h2>Student Feedback Form</h2>
+  <form id="feedbackForm">
+    <!-- Name -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+    <div id="nameError" class="error"></div>
+
+    <!-- Email -->
+    <label for="email">Email ID:</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    <div id="emailError" class="error"></div>
+
+    <!-- Mobile Number -->
+    <label for="mobile">Mobile No.:</label>
+    <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+    <div id="mobileError" class="error"></div>
+
+    <!-- Feedback -->
+    <label for="feedback">Feedback:</label>
+    <select id="feedback" name="feedback" required>
+      <option value="">Select Feedback</option>
+      <option value="Not Good">Not Good</option>
+      <option value="Good">Good</option>
+      <option value="Very Good">Very Good</option>
+      <option value="Excellent">Excellent</option>
+    </select>
+    <div id="feedbackError" class="error"></div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    // Function to validate the form
+    function validateForm(event) {
+      event.preventDefault(); // Prevent form submission
+
+      // Clear any previous error messages
+      document.getElementById('nameError').innerText = '';
+      document.getElementById('emailError').innerText = '';
+      document.getElementById('mobileError').innerText = '';
+      document.getElementById('feedbackError').innerText = '';
+
+      // Get form values
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
+      const feedback = document.getElementById('feedback').value;
+
+      let valid = true;
+
+      // Regular Expression for name (only letters)
+      const nameRegex = /^[a-zA-Z\s]+$/;
+      if (!nameRegex.test(name)) {
+        document.getElementById('nameError').innerText = 'Name must contain only letters and spaces';
+        valid = false;
+      }
+
+      // Regular Expression for email
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (!emailRegex.test(email)) {
+        document.getElementById('emailError').innerText = 'Please enter a valid email address';
+        valid = false;
+      }
+
+      // Regular Expression for mobile number (10 digits)
+      const mobileRegex = /^[0-9]{10}$/;
+      if (!mobileRegex.test(mobile)) {
+        document.getElementById('mobileError').innerText = 'Mobile number must be 10 digits';
+        valid = false;
+      }
+
+      // Check feedback selection
+      if (!feedback) {
+        document.getElementById('feedbackError').innerText = 'Please select a feedback option';
+        valid = false;
+      }
+
+      // If form is valid, submit it
+      if (valid) {
+        alert('Feedback submitted successfully!');
+        document.getElementById('feedbackForm').reset(); // Reset the form
+      }
+    }
+
+    // Attach form validation on submit
+    document.getElementById('feedbackForm').addEventListener('submit', validateForm);
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 13
+Q.1) Create a Node.js file that will convert the output "HELLO WORLD!" into lower-case letters. 
+
+//app.js
+
+// Original string
+const originalString = "HELLO WORLD!";
+
+// Convert the string to lowercase
+const lowerCaseString = originalString.toLowerCase();
+
+// Output the result
+console.log("Original String: " + originalString);
+console.log("Lowercase String: " + lowerCaseString);
+
+Run the file by typing the following command in the terminal: node app.js
+
+
+Q.2) Create an HTML form that contain the Student Registration details and write a JavaScript to validate Student first and last name as it should not contain other than alphabets and age should be between 18 to 50.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Registration</title>
+</head>
+<body>
+
+  <h2>Student Registration Form</h2>
+  <form onsubmit="return validateStudentForm()">
+    <label for="fname">First Name:</label><br>
+    <input type="text" id="fname" name="fname"><br><br>
+
+    <label for="lname">Last Name:</label><br>
+    <input type="text" id="lname" name="lname"><br><br>
+
+    <label for="age">Age:</label><br>
+    <input type="number" id="age" name="age"><br><br>
+
+    <div id="error-msg" style="color: red;"></div><br>
+
+    <input type="submit" value="Register">
+  </form>
+
+  <script src="validate.js"></script>
+</body>
+</html>
+
+
+//validate.js
+
+function validateStudentForm() {
+  const fname = document.getElementById("fname").value.trim();
+  const lname = document.getElementById("lname").value.trim();
+  const age = parseInt(document.getElementById("age").value.trim(), 10);
+  const errorMsg = document.getElementById("error-msg");
+
+  const nameRegex = /^[A-Za-z]+$/;
+
+  if (!nameRegex.test(fname)) {
+    errorMsg.textContent = "First name should contain only alphabets.";
+    return false;
+  }
+
+  if (!nameRegex.test(lname)) {
+    errorMsg.textContent = "Last name should contain only alphabets.";
+    return false;
+  }
+
+  if (isNaN(age) || age < 18 || age > 50) {
+    errorMsg.textContent = "Age must be a number between 18 and 50.";
+    return false;
+  }
+
+  errorMsg.textContent = "";
+  alert("Registration Successful!");
+  return true;
+}
+
+
+
+
+//slip 14
+Q.1) Create a Simple Web Server using node js.
+
+//server.js
+
+// Import the built-in 'http' module
+const http = require('http');
+
+// Create a web server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' }); // Set status and content type
+  res.end('Hello! This is a simple Node.js web server.'); // Send response
+});
+
+// Start the server and listen on port 3000
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
+});
+
+Run the server using: node server.js
+
+
+Q.2) Create an HTML form that contain the Employee Registration details and write a JavaScript to validate DOB, Joining Date, and Salary.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Registration Form</title>
+</head>
+<body>
+
+  <h2>Employee Registration Form</h2>
+  <form id="employeeForm" onsubmit="return validateForm()">
+    <!-- Employee Name -->
+    <label for="empName">Name:</label>
+    <input type="text" id="empName" name="empName" required>
+    <br><br>
+
+    <!-- Date of Birth -->
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" name="dob" required>
+    <div id="dobError" style="color: red;"></div>
+    <br><br>
+
+    <!-- Joining Date -->
+    <label for="joiningDate">Joining Date:</label>
+    <input type="date" id="joiningDate" name="joiningDate" required>
+    <div id="joiningDateError" style="color: red;"></div>
+    <br><br>
+
+    <!-- Salary -->
+    <label for="salary">Salary:</label>
+    <input type="number" id="salary" name="salary" required>
+    <div id="salaryError" style="color: red;"></div>
+    <br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    // Function to validate the form
+    function validateForm() {
+      let valid = true;
+
+      // Clear previous error messages
+      document.getElementById('dobError').innerText = '';
+      document.getElementById('joiningDateError').innerText = '';
+      document.getElementById('salaryError').innerText = '';
+
+      // Get form values
+      const dob = document.getElementById('dob').value;
+      const joiningDate = document.getElementById('joiningDate').value;
+      const salary = document.getElementById('salary').value;
+
+      // Validate Date of Birth: Should not be in the future
+      const today = new Date();
+      const dobDate = new Date(dob);
+      if (dobDate > today) {
+        document.getElementById('dobError').innerText = 'Date of Birth cannot be in the future.';
+        valid = false;
+      }
+
+      // Validate Joining Date: Should not be in the future
+      const joiningDateObj = new Date(joiningDate);
+      if (joiningDateObj > today) {
+        document.getElementById('joiningDateError').innerText = 'Joining Date cannot be in the future.';
+        valid = false;
+      }
+
+      // Validate Salary: Should be a positive number
+      if (salary <= 0) {
+        document.getElementById('salaryError').innerText = 'Salary should be a positive number.';
+        valid = false;
+      }
+
+      return valid; // If any validation fails, form will not be submitted
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 15
+Q.1) Create a node.js file that Select all records from the "students" table, and display the result object on console.
+
+//app.js
+
+// Simulated in-memory "students" table (array of objects)
+const students = [
+  { id: 1, name: 'John Doe', age: 22, course: 'Computer Science' },
+  { id: 2, name: 'Jane Smith', age: 20, course: 'Mathematics' },
+  { id: 3, name: 'Sam Brown', age: 21, course: 'Physics' },
+  { id: 4, name: 'Emily Davis', age: 23, course: 'Chemistry' }
+];
+
+// Simulate the SELECT query to fetch all records
+function getAllStudents() {
+  return students;
+}
+
+// Fetch and display all student records
+const allStudents = getAllStudents();
+console.log("All Students Records:", allStudents);
+
+How to Run This in VS Code: node app.js
+
+
+Q.2) Create an HTML form for Employee and write a JavaScript to validate name, email ID, mobile number, department, joining date using Regular Expression.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Registration Form</title>
+</head>
+<body>
+
+  <h2>Employee Registration Form</h2>
+  <form id="employeeForm" onsubmit="return validateForm()">
+    <!-- Name -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br><br>
+
+    <!-- Email -->
+    <label for="email">Email ID:</label>
+    <input type="email" id="email" name="email" required>
+    <br><br>
+
+    <!-- Mobile Number -->
+    <label for="mobile">Mobile Number:</label>
+    <input type="text" id="mobile" name="mobile" required>
+    <br><br>
+
+    <!-- Department -->
+    <label for="department">Department:</label>
+    <select id="department" name="department" required>
+      <option value="">Select Department</option>
+      <option value="HR">HR</option>
+      <option value="IT">IT</option>
+      <option value="Finance">Finance</option>
+      <option value="Marketing">Marketing</option>
+    </select>
+    <br><br>
+
+    <!-- Joining Date -->
+    <label for="joiningDate">Joining Date:</label>
+    <input type="date" id="joiningDate" name="joiningDate" required>
+    <br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    // Function to validate the form
+    function validateForm() {
+      let valid = true;
+
+      // Clear previous error messages
+      const errorMessages = document.querySelectorAll('.error');
+      errorMessages.forEach((msg) => msg.remove());
+
+      // Name validation (only alphabets)
+      const name = document.getElementById('name').value;
+      const namePattern = /^[A-Za-z\s]+$/;
+      if (!namePattern.test(name)) {
+        displayError('name', 'Name can only contain alphabets and spaces.');
+        valid = false;
+      }
+
+      // Email validation (simple regex for email format)
+      const email = document.getElementById('email').value;
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (!emailPattern.test(email)) {
+        displayError('email', 'Please enter a valid email address.');
+        valid = false;
+      }
+
+      // Mobile number validation (10 digits)
+      const mobile = document.getElementById('mobile').value;
+      const mobilePattern = /^\d{10}$/;
+      if (!mobilePattern.test(mobile)) {
+        displayError('mobile', 'Mobile number must be 10 digits.');
+        valid = false;
+      }
+
+      // Department validation (must select a department)
+      const department = document.getElementById('department').value;
+      if (department === "") {
+        displayError('department', 'Please select a department.');
+        valid = false;
+      }
+
+      // Joining date validation (cannot be a future date)
+      const joiningDate = new Date(document.getElementById('joiningDate').value);
+      const today = new Date();
+      if (joiningDate > today) {
+        displayError('joiningDate', 'Joining date cannot be in the future.');
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    // Function to display error messages
+    function displayError(field, message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.classList.add('error');
+      errorDiv.style.color = 'red';
+      errorDiv.textContent = message;
+
+      const inputField = document.getElementById(field);
+      inputField.insertAdjacentElement('afterend', errorDiv);
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 16
+Q.1) Using node js create a Recipe Book.
+
+//app.js
+
+// app.js
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+// In-memory storage for recipes
+let recipes = [
+    {
+        id: 1,
+        name: 'Spaghetti Bolognese',
+        ingredients: ['Spaghetti', 'Tomato Sauce', 'Ground Beef', 'Garlic'],
+        instructions: 'Boil spaghetti, cook beef, mix with sauce, serve.'
+    },
+    {
+        id: 2,
+        name: 'Pancakes',
+        ingredients: ['Flour', 'Milk', 'Eggs', 'Butter'],
+        instructions: 'Mix ingredients, cook on skillet, serve with syrup.'
+    }
+];
+
+// Middleware to parse request body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Route to get all recipes
+app.get('/recipes', (req, res) => {
+    res.json(recipes);
+});
+
+// Route to add a new recipe
+app.post('/recipes', (req, res) => {
+    const { name, ingredients, instructions } = req.body;
+    const newRecipe = {
+        id: recipes.length + 1,
+        name: name,
+        ingredients: ingredients,
+        instructions: instructions
+    };
+    recipes.push(newRecipe);
+    res.status(201).json(newRecipe);
+});
+
+// Home route
+app.get('/', (req, res) => {
+    res.send('<h1>Welcome to the Recipe Book</h1><p>Go to /recipes to view all recipes.</p>');
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Recipe Book app listening at http://localhost:${port}`);
+});
+
+npm init -y
+npm install express
+
+Start the server by running: node app.js
+
+
+Q.2) Create a js file named main.js for event-driven application. There should be a main loop that listens for events, and then triggers a call-back function when one of those events is detected.
+
+//main.js
+
+// Import the EventEmitter class from the 'events' module
+const EventEmitter = require('events');
+
+// Create an instance of EventEmitter
+const eventEmitter = new EventEmitter();
+
+// Function that is called when an event is triggered
+function eventHandler() {
+    console.log("Event has been triggered!");
+}
+
+// Register an event listener for the 'start' event
+eventEmitter.on('start', eventHandler);
+
+// Main loop to listen for events and trigger callback function
+function mainLoop() {
+    console.log("Main loop is running...");
+
+    // Simulate an event being triggered
+    setTimeout(() => {
+        console.log("Triggering 'start' event...");
+        eventEmitter.emit('start');  // Emit the 'start' event
+    }, 2000);  // Event will trigger after 2 seconds
+
+    setTimeout(() => {
+        console.log("End of main loop.");
+    }, 4000);  // End of the loop after 4 seconds
+}
+
+// Start the main loop
+mainLoop();
+
+Run the file using Node.js: node main.js
+
+
+
+
+//slip 17
+Q.1) Using angular js Create a SPA that show Syllabus content of all subjects of M.Sc (CS) Sem-II. (use ng-view)
+
+/MScCS_SemII_Syllabus
+  ├── index.html
+  ├── app.js
+  ├── syllabus.html
+  └── controller.js
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.Sc (CS) Sem-II Syllabus</title>
+    <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular-route.min.js"></script>
+    <script src="app.js"></script>
+    <script src="controller.js"></script>
+</head>
+<body ng-app="syllabusApp">
+
+    <!-- Header Section -->
+    <header>
+        <h1>M.Sc (CS) Semester-II Syllabus</h1>
+        <nav>
+            <ul>
+                <li><a href="#!subject1">Subject 1</a></li>
+                <li><a href="#!subject2">Subject 2</a></li>
+                <li><a href="#!subject3">Subject 3</a></li>
+                <li><a href="#!subject4">Subject 4</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Content Section using ng-view -->
+    <div ng-view></div>
+
+</body>
+</html>
+
+
+//app.js
+
+var app = angular.module('syllabusApp', ['ngRoute']);
+
+// Configure Routes
+app.config(function($routeProvider) {
+    $routeProvider
+        .when('/subject1', {
+            templateUrl: 'syllabus.html',
+            controller: 'SubjectController'
+        })
+        .when('/subject2', {
+            templateUrl: 'syllabus.html',
+            controller: 'SubjectController'
+        })
+        .when('/subject3', {
+            templateUrl: 'syllabus.html',
+            controller: 'SubjectController'
+        })
+        .when('/subject4', {
+            templateUrl: 'syllabus.html',
+            controller: 'SubjectController'
+        })
+        .otherwise({
+            redirectTo: '/subject1'
+        });
+});
+
+
+//controller.js
+
+app.controller('SubjectController', function($scope, $routeParams) {
+    var subjects = {
+        subject1: {
+            name: "Subject 1: Advanced Algorithms",
+            content: "This subject covers topics like Graph Algorithms, Sorting, and Dynamic Programming."
+        },
+        subject2: {
+            name: "Subject 2: Database Management Systems",
+            content: "This subject covers topics like Database Models, SQL, and Normalization."
+        },
+        subject3: {
+            name: "Subject 3: Operating Systems",
+            content: "This subject covers topics like Processes, Memory Management, and File Systems."
+        },
+        subject4: {
+            name: "Subject 4: Computer Networks",
+            content: "This subject covers topics like TCP/IP, OSI Model, and Network Protocols."
+        }
+    };
+
+    // Use $routeParams to get the subject from URL
+    var subjectId = $routeParams.subjectId;
+
+    // Get the corresponding subject content
+    $scope.subject = subjects[subjectId];
+});
+
+
+//syllabus.html
+
+<!-- syllabus.html -->
+<div>
+    <h2>{{ subject.name }}</h2>
+    <p>{{ subject.content }}</p>
+</div>
+
+
+Q.2) Using angular js display the 10 student details in Table format. (using ng-repeat directive use Array to store data)
+
+/student-details-app
+  ├── index.html
+  ├── app.js
+  └── style.css
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body ng-app="studentApp">
+    <div ng-controller="StudentController">
+        <h2>Student Details</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ng-repeat to loop through the student data array -->
+                <tr ng-repeat="student in students">
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.age }}</td>
+                    <td>{{ student.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+
+//app.js
+
+var app = angular.module('studentApp', []);
+
+app.controller('StudentController', function($scope) {
+    // Define an array of 10 student objects
+    $scope.students = [
+        { id: 1, name: 'John Doe', age: 20, email: 'john.doe@example.com' },
+        { id: 2, name: 'Jane Smith', age: 22, email: 'jane.smith@example.com' },
+        { id: 3, name: 'Robert Brown', age: 23, email: 'robert.brown@example.com' },
+        { id: 4, name: 'Emily Davis', age: 21, email: 'emily.davis@example.com' },
+        { id: 5, name: 'Michael Wilson', age: 24, email: 'michael.wilson@example.com' },
+        { id: 6, name: 'Sarah Moore', age: 20, email: 'sarah.moore@example.com' },
+        { id: 7, name: 'David Taylor', age: 22, email: 'david.taylor@example.com' },
+        { id: 8, name: 'Laura Anderson', age: 23, email: 'laura.anderson@example.com' },
+        { id: 9, name: 'James Thomas', age: 21, email: 'james.thomas@example.com' },
+        { id: 10, name: 'Patricia Jackson', age: 25, email: 'patricia.jackson@example.com' }
+    ];
+});
+
+
+//style.css
+
+/* style.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+
+
+
+//slip 18
+Q.1) Using node js create a User Login System.
+
+Open VS Code and create a new folder called user-login (or any name you prefer).
+Inside the folder, create the following files:
+index.html (Login Form)
+app.js (Node.js server)
+package.json (dependencies and configuration)
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+</head>
+<body>
+    <h2>User Login</h2>
+    <form action="/login" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+
+
+//app.js
+
+// Import necessary modules
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+// Create an instance of express
+const app = express();
+
+// Set the port for the server
+const PORT = 3000;
+
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// In-memory user data (for simplicity)
+const users = [
+    { username: 'user1', password: 'password123' },
+    { username: 'user2', password: 'password456' }
+];
+
+// Serve the login form when the root URL is accessed
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Handle the login request
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // Check if the user exists and the password matches
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        // If credentials are correct
+        res.send('<h2>Login Successful!</h2>');
+    } else {
+        // If credentials are incorrect
+        res.send('<h2>Invalid Username or Password</h2>');
+    }
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+//package.json
+
+{
+  "name": "user-login",
+  "version": "1.0.0",
+  "description": "A simple user login system using Node.js and Express",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+Run the following command to start the server: node app.js
+
+
+Q.2) Create a node.js file that Select all records from the "customers" table, and find the customers whose name starts from ‘A’.
+
+customer-app/
+├── customers.json
+├── app.js
+
+//customers.json
+
+[
+  { "id": 1, "name": "Alice", "email": "alice@example.com" },
+  { "id": 2, "name": "Bob", "email": "bob@example.com" },
+  { "id": 3, "name": "Ankit", "email": "ankit@example.com" },
+  { "id": 4, "name": "Charlie", "email": "charlie@example.com" },
+  { "id": 5, "name": "Arun", "email": "arun@example.com" }
+]
+
+
+//app.js
+
+const fs = require('fs');
+
+// Read data from customers.json
+fs.readFile('customers.json', 'utf8', (err, data) => {
+  if (err) {
+    console.error('Error reading file:', err);
+    return;
+  }
+
+  const customers = JSON.parse(data);
+
+  console.log("All Customers:");
+  console.log(customers);
+
+  const filtered = customers.filter(customer =>
+    customer.name.toLowerCase().startsWith('a')
+  );
+
+  console.log("\nCustomers whose name starts with 'A':");
+  console.log(filtered);
+});
+
+Run this command: node app.js
+
+
+
+
+//slip 19
+Q.1) Create a Node.js file that will convert the output "Hello World!" into upper-case letters.
+
+//app.js
+
+// Original string
+const originalString = "Hello World!";
+
+// Convert to uppercase
+const upperCaseString = originalString.toUpperCase();
+
+// Print results
+console.log("Original String:", originalString);
+console.log("Uppercase String:", upperCaseString);
+
+Run the code using Node.js: node app.js
+
+
+Q.2) Using angular js create a SPA to accept the details such as name, mobile number, pin code and email address and make validation. Name should contain character only, address should contain SPPU M.Sc. Computer Science Syllabus 2023-24, mobile number should contain only 10 digit, Pin code should contain only 6 digit, email id should contain only one @, . Symbol.
+
+//index.htm
+
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+  <title>SPA Student Details Form</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="formController">
+
+  <h2>Student Details Form</h2>
+
+  <form name="studentForm" novalidate ng-submit="submitForm()">
+    
+    <!-- Name -->
+    <label>Name:</label><br>
+    <input type="text" name="name" ng-model="student.name" 
+           ng-pattern="/^[a-zA-Z ]+$/" required><br>
+    <span ng-show="studentForm.name.$dirty && studentForm.name.$invalid">
+      Name must contain letters only.<br>
+    </span>
+
+    <!-- Mobile Number -->
+    <label>Mobile Number:</label><br>
+    <input type="text" name="mobile" ng-model="student.mobile" 
+           ng-pattern="/^\d{10}$/" required><br>
+    <span ng-show="studentForm.mobile.$dirty && studentForm.mobile.$invalid">
+      Mobile number must be 10 digits.<br>
+    </span>
+
+    <!-- Pin Code -->
+    <label>Pin Code:</label><br>
+    <input type="text" name="pincode" ng-model="student.pincode" 
+           ng-pattern="/^\d{6}$/" required><br>
+    <span ng-show="studentForm.pincode.$dirty && studentForm.pincode.$invalid">
+      Pin code must be 6 digits.<br>
+    </span>
+
+    <!-- Email -->
+    <label>Email:</label><br>
+    <input type="email" name="email" ng-model="student.email"
+           ng-pattern="/^[^@]+@[^@]+\.[^@]+$/" required><br>
+    <span ng-show="studentForm.email.$dirty && studentForm.email.$invalid">
+      Enter a valid email address.<br>
+    </span>
+
+    <!-- Address -->
+    <label>Address:</label><br>
+    <input type="text" name="address" ng-model="student.address"
+           ng-pattern="/^SPPU M\.Sc\. Computer Science Syllabus 2023-24$/" required><br>
+    <span ng-show="studentForm.address.$dirty && studentForm.address.$invalid">
+      Address must exactly match "SPPU M.Sc. Computer Science Syllabus 2023-24".<br>
+    </span>
+
+    <br><button type="submit" ng-disabled="studentForm.$invalid">Submit</button>
+
+  </form>
+
+  <div ng-if="submitted">
+    <h3>Form Submitted Successfully</h3>
+    <pre>{{ student | json }}</pre>
+  </div>
+
+  <script>
+    angular.module('myApp', [])
+      .controller('formController', function($scope) {
+        $scope.student = {};
+        $scope.submitted = false;
+
+        $scope.submitForm = function() {
+          if ($scope.studentForm.$valid) {
+            $scope.submitted = true;
+            console.log("Form Data:", $scope.student);
+          }
+        };
+      });
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 20
+Q.1) Create a Node.js file that demonstrate create student database and table in MySQL.
+
+//createStudentDB.js
+
+const mysql = require('mysql');
+
+// Create MySQL connection
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',          // your MySQL username
+  password: '',          // your MySQL password
+});
+
+// Connect to MySQL server
+connection.connect(err => {
+  if (err) throw err;
+  console.log("Connected to MySQL!");
+
+  // Create database
+  connection.query("CREATE DATABASE IF NOT EXISTS student", (err) => {
+    if (err) throw err;
+    console.log("Database 'student' created or already exists.");
+
+    // Use the database
+    connection.changeUser({ database: 'student' }, err => {
+      if (err) throw err;
+
+      // Create students table
+      const createTable = `
+        CREATE TABLE IF NOT EXISTS students (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(100),
+          age INT,
+          email VARCHAR(100)
+        )
+      `;
+      connection.query(createTable, (err) => {
+        if (err) throw err;
+        console.log("Table 'students' created successfully.");
+        connection.end();
+      });
+    });
+  });
+});
+
+In the terminal, run: node createStudentDB.js
+
+
+Q.2) Using angular js create a SPA to carry out validation for a username entered in a textbox. If the textbox is blank, alert “Enter username”. If the number of characters is less than three, alert ‟ Username is too short”. If value entered is appropriate the print “Valid username” and password should be minimum 8 characters.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Username Validation</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="FormController">
+
+  <h2>User Login Form</h2>
+
+  <form name="loginForm" novalidate>
+
+    <label>Username:</label><br>
+    <input type="text" ng-model="username"><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" ng-model="password"><br><br>
+
+    <button ng-click="validate()">Login</button>
+  </form>
+
+  <p style="color:green;" ng-show="isValid">Valid username</p>
+
+  <script>
+    angular.module("myApp", [])
+      .controller("FormController", function ($scope) {
+        $scope.isValid = false;
+
+        $scope.validate = function () {
+          $scope.isValid = false;
+
+          if (!$scope.username) {
+            alert("Enter username");
+            return;
+          }
+
+          if ($scope.username.length < 3) {
+            alert("Username is too short");
+            return;
+          }
+
+          if (!$scope.password || $scope.password.length < 8) {
+            alert("Password must be at least 8 characters");
+            return;
+          }
+
+          $scope.isValid = true;
+        };
+      });
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 21
+Q.1) Create a Node.js file that demonstrates create Movie database and table in MySQL.
+
+//createMovieDB.js
+
+const mysql = require('mysql');
+
+// Create MySQL connection
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',       // Your MySQL username
+  password: '',       // Your MySQL password (leave empty if none)
+});
+
+// Connect to MySQL
+connection.connect(err => {
+  if (err) throw err;
+  console.log("Connected to MySQL!");
+
+  // Create database
+  connection.query("CREATE DATABASE IF NOT EXISTS movieDB", (err, result) => {
+    if (err) throw err;
+    console.log("Database 'movieDB' created or already exists.");
+
+    // Use the created database
+    connection.changeUser({ database: 'movieDB' }, err => {
+      if (err) throw err;
+
+      // Create table for movies
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS movies (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(100),
+          genre VARCHAR(50),
+          year INT,
+          director VARCHAR(100)
+        )
+      `;
+      
+      connection.query(createTableQuery, (err, result) => {
+        if (err) throw err;
+        console.log("Table 'movies' created or already exists.");
+
+        // Optionally, insert sample data
+        const insertDataQuery = `
+          INSERT INTO movies (title, genre, year, director)
+          VALUES ('Inception', 'Sci-Fi', 2010, 'Christopher Nolan'),
+                 ('The Matrix', 'Sci-Fi', 1999, 'Lana Wachowski, Lilly Wachowski'),
+                 ('The Godfather', 'Crime', 1972, 'Francis Ford Coppola');
+        `;
+        
+        connection.query(insertDataQuery, (err, result) => {
+          if (err) throw err;
+          console.log("Sample movie data inserted.");
+
+          connection.end(); // Close the connection
+        });
+      });
+    });
+  });
+});
+
+Install MySQL Driver:
+npm init -y    # Run this if you haven't initialized your project yet
+npm install mysql
+
+Run the script: node createMovieDB.js
+
+
+Q.2) Write node js application that transfer a file as an attachment on web and enables browser to prompt the user to download file using express js.
+
+/your-project-folder
+  |-- app.js            # Your main server file
+  |-- example-file.txt  # Example file to be served (you can use any file)
+
+//app.js
+
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+// Serve the file as an attachment for download
+app.get('/download', (req, res) => {
+  const filePath = path.join(__dirname, 'example-file.txt');  // Path to the file you want to serve
+  res.download(filePath, 'example-file.txt', (err) => {
+    if (err) {
+      console.error("Error while downloading file:", err);
+      res.status(500).send("Error in file download.");
+    }
+  });
+});
+
+// Home route to explain how to download
+app.get('/', (req, res) => {
+  res.send('<h1>Welcome to the File Download Server</h1>' +
+    '<p>Click the link below to download the file:</p>' +
+    '<a href="/download">Download Example File</a>');
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+
+
+//example-file.txt
+
+This is an example file. You can download it using the Node.js server.
+
+Steps to Run in VS Code:
+Create a project folder (e.g., file-download-app).
+Inside that folder, create the app.js file and paste the code above.
+Create a file named example-file.txt with some content (or use any file you like).
+Open VS Code and navigate to the folder with your app.js file.
+Open Terminal in VS Code (Ctrl + ~ or Terminal > New Terminal).
+
+Run the application: node app.js
+
+
+
+
+//slip 22
+Q.1) Using node js create an Employee Registration Form validation.
+
+//server.js
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+http.createServer((req, res) => {
+  if (req.url === '/') {
+    fs.readFile(path.join(__dirname, 'employee.html'), (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        return res.end('Error loading form');
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  }
+}).listen(3000);
+
+console.log("Server running at http://localhost:3000");
+
+
+//employee.html
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee Registration</title>
+  <script>
+    function validateForm() {
+      const name = document.forms["empForm"]["name"].value;
+      const email = document.forms["empForm"]["email"].value;
+      const mobile = document.forms["empForm"]["mobile"].value;
+      const department = document.forms["empForm"]["department"].value;
+      const joining = document.forms["empForm"]["joining"].value;
+
+      const nameRegex = /^[A-Za-z\s]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const mobileRegex = /^\d{10}$/;
+
+      if (!nameRegex.test(name)) {
+        alert("Enter a valid name");
+        return false;
+      }
+
+      if (!emailRegex.test(email)) {
+        alert("Enter a valid email ID");
+        return false;
+      }
+
+      if (!mobileRegex.test(mobile)) {
+        alert("Enter a valid 10-digit mobile number");
+        return false;
+      }
+
+      if (department === "") {
+        alert("Enter department");
+        return false;
+      }
+
+      if (!joining) {
+        alert("Enter joining date");
+        return false;
+      }
+
+      alert("Form submitted successfully!");
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <h2>Employee Registration Form</h2>
+  <form name="empForm" onsubmit="return validateForm()">
+    Name: <input type="text" name="name"><br><br>
+    Email ID: <input type="text" name="email"><br><br>
+    Mobile No: <input type="text" name="mobile"><br><br>
+    Department: <input type="text" name="department"><br><br>
+    Joining Date: <input type="date" name="joining"><br><br>
+    <input type="submit" value="Register">
+  </form>
+</body>
+</html>
+
+Open a terminal and run: node server.js
+
+
+Q.2) Create a js file named main.js for event-driven application. There should be a main loop that listens for events, and then triggers a callback function when one of those events is detected.
+
+//main.js
+
+// main.js
+const events = require('events');
+
+// Create an event emitter
+const eventEmitter = new events.EventEmitter();
+
+// Create a callback function
+function onGreet() {
+  console.log('Hello! Event detected and callback executed.');
+}
+
+// Register the event with the callback
+eventEmitter.on('greet', onGreet);
+
+// Simulate the main loop by emitting the event after 2 seconds
+setTimeout(() => {
+  console.log("Emitting 'greet' event...");
+  eventEmitter.emit('greet');
+}, 2000);
+
+Run the script: node main.js
+
+
+
+
+//slip 23
+Q.1) Write node js script to interact with the file system, and serve a web page from a File.
+
+//server.js
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Create the server
+const server = http.createServer((req, res) => {
+  const filePath = path.join(__dirname, 'index.html');
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      return res.end('Error loading page');
+    }
+
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end(data);
+  });
+});
+
+// Server listens on port 3000
+server.listen(3000, () => {
+  console.log('Server running at http://localhost:3000');
+});
+
+
+//index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Web Page</title>
+</head>
+<body>
+  <h1>Hello from Node.js File System!</h1>
+  <p>This page is served by reading index.html file.</p>
+</body>
+</html>
+
+Run the server: node server.js
+
+
+Q.2) Write node js script to build Your Own Node.js Module. Use require (‘http’) module is a built in Node module that invokes the functionality of the HTTP library to create a local server. Also use the export statement to make functions in your module available externally. Create a new text file to contain the functions in your module called, “modules.js” and add this function to return today’s date and time.
+
+// modules.js
+
+function getCurrentDateTime() {
+  const currentDate = new Date();
+  return currentDate.toString(); // Returns the current date and time as a string
+}
+
+// Export the function so it can be used in other files
+module.exports = {
+  getCurrentDateTime
+};
+
+
+// app.js
+
+const http = require('http');         // Built-in HTTP module
+const { getCurrentDateTime } = require('./modules');  // Import custom module
+
+// Create an HTTP server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write('<h1>Welcome to My Node.js Server</h1>');
+  
+  // Get the current date and time from the custom module
+  const currentDateTime = getCurrentDateTime();
+  res.write(`<p>Current Date and Time: ${currentDateTime}</p>`);
+
+  res.end();
+});
+
+// Set the server to listen on port 3000
+server.listen(3000, () => {
+  console.log('Server is running at http://localhost:3000');
+});
+
+Run the application by typing: node app.js
+
+
+
+
+//slip 24
+Q.1) Using node js create an eLearning System.
+
+e-learning/
+│
+├── app.js             ← Node.js server
+├── index.html         ← Home page with course list
+├── course.html        ← Course detail page (template)
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>eLearning System</title>
+</head>
+<body>
+  <h1>Welcome to the eLearning System</h1>
+  <ul>
+    <li><a href="/course?name=JavaScript">JavaScript</a></li>
+    <li><a href="/course?name=Python">Python</a></li>
+    <li><a href="/course?name=Java">Java</a></li>
+    <li><a href="/course?name=C">C Programming</a></li>
+  </ul>
+</body>
+</html>
+
+
+//course.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Details</title>
+</head>
+<body>
+  <h1>Course: {{courseName}}</h1>
+  <p>This is a simple description for the <strong>{{courseName}}</strong> course.</p>
+  <a href="/">Back to Home</a>
+</body>
+</html>
+
+
+//app.js
+
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+
+const PORT = 3000;
+
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
+
+  if (pathname === "/") {
+    // Serve homepage
+    fs.readFile("index.html", (err, data) => {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+
+  } else if (pathname === "/course") {
+    // Serve course details
+    const courseName = parsedUrl.query.name || "Unknown";
+
+    fs.readFile("course.html", "utf-8", (err, template) => {
+      const content = template.replace(/{{courseName}}/g, courseName);
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(content);
+    });
+
+  } else {
+    // Not Found
+    res.writeHead(404, { "Content-Type": "text/html" });
+    res.end("<h1>404 Not Found</h1>");
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+});
+
+How to Run: node app.js
+
+
+Q.2) Using angular js create a SPA to carry out validation for a username entered in a textbox. If the textbox is blank, alert “Enter username”. If the number of characters is less than three, alert ‟ Username is too short”. If value entered is appropriate the print “Valid username” and password should be minimum 8 characters.
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Username Validation</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="FormController">
+
+  <h2>User Login Form</h2>
+
+  <form name="loginForm" novalidate>
+
+    <label>Username:</label><br>
+    <input type="text" ng-model="username"><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" ng-model="password"><br><br>
+
+    <button ng-click="validate()">Login</button>
+  </form>
+
+  <p style="color:green;" ng-show="isValid">Valid username</p>
+
+  <script>
+    angular.module("myApp", [])
+      .controller("FormController", function ($scope) {
+        $scope.isValid = false;
+
+        $scope.validate = function () {
+          $scope.isValid = false;
+
+          if (!$scope.username) {
+            alert("Enter username");
+            return;
+          }
+
+          if ($scope.username.length < 3) {
+            alert("Username is too short");
+            return;
+          }
+
+          if (!$scope.password || $scope.password.length < 8) {
+            alert("Password must be at least 8 characters");
+            return;
+          }
+
+          $scope.isValid = true;
+        };
+      });
+  </script>
+
+</body>
+</html>
+
+
+
+
+//slip 25
+Q.1) Create an angular JS Application that shows the location of the current web page.
+
+//locationApp.html
+<!DOCTYPE html>
+<html ng-app="locationApp">
+<head>
+  <title>AngularJS Location App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="LocationController">
+
+  <h2>Web Page Location Info</h2>
+
+  <p><strong>Full URL:</strong> {{ location.href }}</p>
+  <p><strong>Protocol:</strong> {{ location.protocol }}</p>
+  <p><strong>Host:</strong> {{ location.host }}</p>
+  <p><strong>Hostname:</strong> {{ location.hostname }}</p>
+  <p><strong>Port:</strong> {{ location.port }}</p>
+  <p><strong>Pathname:</strong> {{ location.pathname }}</p>
+
+  <script>
+    angular.module('locationApp', [])
+      .controller('LocationController', function($scope) {
+        $scope.location = window.location;
+      });
+  </script>
+
+</body>
+</html>
+
+
+Q.2) Create a js file named main.js for event-driven application. There should be a main loop that listens for events, and then triggers a callback function when one of those events is detected.
+
+//main.js
+
+// main.js
+
+const events = require('events');
+
+// Create an EventEmitter object
+const eventEmitter = new events.EventEmitter();
+
+// Define a callback function
+function onSayHello() {
+  console.log('Hello! Event triggered successfully.');
+}
+
+// Register the event with the callback
+eventEmitter.on('sayHello', onSayHello);
+
+// Simulate a main loop using setInterval to trigger the event every 2 seconds
+setInterval(() => {
+  console.log('Triggering sayHello event...');
+  eventEmitter.emit('sayHello');
+}, 2000);
+
+Run the file with Node.js: node main.js
